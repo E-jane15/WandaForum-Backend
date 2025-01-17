@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ScheduleModule } from './schedule/schedule.module';
+import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './users/users.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ScheduleModule],
+  imports: [UsersModule, DatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })
