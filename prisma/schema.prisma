@@ -1,39 +1,96 @@
 generator client {
   provider = "prisma-client-js"
- }
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-enum NotificationStatus {
-  UNREAD
-  READ
-}
-
-model Notification {
-  id          Int                 @id @default(autoincrement())
-  title       String              @db.VarChar(255)
-  message     String              @db.Text
-  userId      Int
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  status      NotificationStatus  @default(UNREAD)
-
-  user        User                @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([status])
-}
-
 model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  user_name    String         @unique
-  password      String        
-  full_name     String
-  createdAt    DateTime? @default(now())
+  id        String     @id @default(uuid())
+  userName  String     @unique @map("user_name")
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  schedule  schedule[]
+  questions      Question[]    // Questions posted by the user
+  savedQuestions Question[]    @relation("UserSavedQuestions") // Questions saved by the user
+  answers        Answer[]      // Answers given by the user
+  questionLikes  QuestionLike[] // Questions liked by the user
+  @@map("user")
+}
+
+model schedule {
+  id             String      @id @default(uuid())
+  user_id        String
+  interview_type String
+  peer_type      String
+  practice_level String
+  date           DateTime
+  time           DateTime
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  user           User     @relation(fields: [user_id], references: [id])
+  @@map("schedule")
+}
+
+model Question {
+  id        String     @id @default(uuid())
+  title     String   
+  content   String   
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+
+  savedByUsers  User[]          @relation("UserSavedQuestions") // Users who saved this question
+  tags          QuestionTag[]   // Tags associated with the question
+  answers       Answer[]        // Answers to this question
+  likes         QuestionLike[]
+
+  @@map("question")
+}
+
+model Tag {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  questions   QuestionTag[]
   
-  notifications Notification[]
+  @@map("tag")
+}
+
+model QuestionTag {
+  questionId String   @map("question_id")
+  tagId      String   @map("tag_id")
+  question   Question @relation(fields: [questionId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([questionId, tagId])
+  @@map("question_tag")
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  content    String
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  user       User     @relation(fields: [userId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@map("answer")
+}
+
+model QuestionLike {
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@id([userId, questionId])
+  @@map("question_like")
 }
