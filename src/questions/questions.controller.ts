@@ -1,4 +1,3 @@
-// src/questions/questions.controller.ts
 import {
   Controller,
   Get,
