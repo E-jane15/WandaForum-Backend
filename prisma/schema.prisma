@@ -96,3 +96,12 @@ model QuestionLike {
   @@id([userId, questionId])
   @@map("question_like")
 }
+
+model Question {
+  id        Int @id @default(autoincrement())
+  title     String 
+  content   String 
+  createdAt DateTime @default(now())
+  savedByUsers User[]  @relation("UserSavedQuestions")
+  
+}
