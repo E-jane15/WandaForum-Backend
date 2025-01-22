@@ -15,8 +15,10 @@ model User {
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
   schedule  schedule[]
-  questions Question[] 
-
+  questions      Question[]    // Questions posted by the user
+  savedQuestions Question[]    @relation("UserSavedQuestions") // Questions saved by the user
+  answers        Answer[]      // Answers given by the user
+  questionLikes  QuestionLike[] // Questions liked by the user
   @@map("user")
 }
 
@@ -43,5 +45,52 @@ model Question {
   updatedAt DateTime @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
 
+  savedByUsers  User[]          @relation("UserSavedQuestions") // Users who saved this question
+  tags          QuestionTag[]   // Tags associated with the question
+  answers       Answer[]        // Answers to this question
+  likes         QuestionLike[]
+
   @@map("question")
+}
+
+model Tag {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  questions   QuestionTag[]
+  
+  @@map("tag")
+}
+
+model QuestionTag {
+  questionId String   @map("question_id")
+  tagId      String   @map("tag_id")
+  question   Question @relation(fields: [questionId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([questionId, tagId])
+  @@map("question_tag")
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  content    String
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  user       User     @relation(fields: [userId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@map("answer")
+}
+
+model QuestionLike {
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@id([userId, questionId])
+  @@map("question_like")
 }
