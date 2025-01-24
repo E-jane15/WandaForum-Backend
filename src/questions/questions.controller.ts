@@ -14,9 +14,11 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+// import { AuthGuard } from '@nestjs/passport';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard) // This ensures all routes are protected by default
+// @UseGuards(AuthGuard('jwt'))
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 

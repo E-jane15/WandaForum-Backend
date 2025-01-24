@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -19,6 +18,11 @@ export class UsersService {
 
   async findByEmail(email: string) {
     return this.databaseService.user.findUnique({ where: { email } });
+  }
+
+  async findById(id: string) {
+    console.log(id);
+    return this.databaseService.user.findFirst({ where: { id } });
   }
 
   async register(createUserDto: CreateUserDto) {
@@ -47,11 +51,17 @@ export class UsersService {
 
   //JWT Token
   async login(loginDto: LoginDto) {
-   const user = await this.validateUser(loginDto)
+    console.log(process.env.JWT_SECRET);
+    const user = await this.validateUser(loginDto);
 
-    const payload = { email: loginDto.email, sub: loginDto.password };
+    // const payload = { email: loginDto.email, sub: loginDto.password };
+    const payload = {
+      email: user.email,
+      userId: user.id, // Use the actual user ID
+    };
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 }
