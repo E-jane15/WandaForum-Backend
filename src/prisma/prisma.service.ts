@@ -1,18 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService extends PrismaClient {
-  constructor() {
-    super();
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  async onModuleInit() {
+    await this.$connect();
   }
 
-  async getQuestionById(questionId: number) {
-    return await this.question.findUnique({ where: { 
-      id: questionId 
-    }
-   }
-  );
-  
+  async onModuleDestroy() {
+    await this.$disconnect();
   }
 }

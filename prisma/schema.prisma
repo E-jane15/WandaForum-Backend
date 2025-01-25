@@ -11,14 +11,16 @@ model User {
   id             String         @id @default(uuid())
   userName       String         @unique @map("user_name")
   email          String         @unique
-  password       String
+  password       String        
+
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
   schedule       Schedule[]
-  questions      Question[] // Questions posted by the user
+  questions      Question[] // =====Questions posted by the user
   savedQuestions Question[]     @relation("UserSavedQuestions") // Questions saved by the user
-  answers        Answer[] // Answers given by the user
-  questionLikes  QuestionLike[] // Questions liked by the user
+  answers        Answer[] //======= Answers given by the user
+  questionLikes  QuestionLike[] // ======CQuestions liked by the user
+  notifications Notification[]
 
   @@map("user")
 }
@@ -97,11 +99,20 @@ model QuestionLike {
   @@map("question_like")
 }
 
-model Question {
-  id        Int @id @default(autoincrement())
-  title     String 
-  content   String 
-  createdAt DateTime @default(now())
-  savedByUsers User[]  @relation("UserSavedQuestions")
-  
+model Notification {
+  id          Int      @id @default(autoincrement())
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  interviewId Int?
+  interview   Interview? @relation(fields: [interviewId], references: [id])
+}
+
+model Interview {
+  id            Int            @id @default(autoincrement())
+  title         String
+  date          DateTime
+  notifications Notification[]
 }

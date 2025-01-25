@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { ErrorNotification } from 'rxjs';
+import { NotificationModule } from './notification/notification.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -21,11 +24,13 @@ import { ConfigModule } from '@nestjs/config';
     QuestionsModule,
     AuthModule,
     PrismaModule,
+    NotificationModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
