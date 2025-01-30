@@ -24,16 +24,16 @@ model User {
 }
 
 model Schedule {
-  id             String   @id @default(uuid())
-  user_id        String
-  interview_type String
-  peer_type      String
-  practice_level String
-  date           DateTime
-  time           DateTime
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  user           User     @relation(fields: [user_id], references: [id])
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  user          User     @relation(fields: [userId], references: [id])
+  interviewType String   @map("interview_type")
+  peerType      String   @map("peer_type")
+  practiceLevel String   @map("practice_level")
+  date          DateTime
+  time          DateTime
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("schedule")
 }
