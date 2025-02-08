@@ -21,43 +21,64 @@ export class UsersService {
   }
 
   async findById(id: string) {
-    console.log(id);
-    return this.databaseService.user.findFirst({ where: { id } });
+    return this.databaseService.user.findUnique({ where: { id } });
   }
 
   async register(createUserDto: CreateUserDto) {
-    const existingUser = await this.findByEmail(createUserDto.email);
-    if (existingUser) {
-      throw new ConflictException('User already exists');
+    try {
+      const { userName, email, password, confirmPassword } = createUserDto;
+
+      if (password !== confirmPassword) {
+        throw new ConflictException('Passwords do not match');
+      }
+
+      // ✅ Check if the email already exists
+      const existingEmail = await this.findByEmail(email);
+      if (existingEmail) {
+        throw new ConflictException('User with this email already exists');
+      }
+
+      // ✅ Check if the username already exists
+      const existingUser = await this.databaseService.user.findUnique({
+        where: { userName },
+      });
+
+      if (existingUser) {
+        throw new ConflictException('Username is already taken');
+      }
+
+      // ✅ Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // ✅ Save user in database
+      return await this.databaseService.user.create({
+        data: { userName, email, password: hashedPassword },
+      });
+    } catch (error) {
+      console.error('Signup Error:', error); // ✅ Log the full error details
+      throw new Error('Signup failed. Please check the backend logs.');
     }
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    return this.databaseService.user.create({
-      data: {
-        userName: createUserDto.userName,
-        email: createUserDto.email,
-        password: hashedPassword,
-      },
-    });
   }
 
   async validateUser(loginDto: LoginDto) {
     const user = await this.findByEmail(loginDto.email);
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
-      const { password, ...result } = user;
-      return result;
+      return {
+        id: user.id,
+        email: user.email,
+        userName: user.userName,
+      };
     }
     throw new UnauthorizedException('Invalid credentials');
   }
 
-  //JWT Token
   async login(loginDto: LoginDto) {
-    console.log(process.env.JWT_SECRET);
     const user = await this.validateUser(loginDto);
 
-    // const payload = { email: loginDto.email, sub: loginDto.password };
+    // ✅ Generate JWT token payload
     const payload = {
       email: user.email,
-      userId: user.id, // Use the actual user ID
+      userId: user.id,
     };
 
     return {
