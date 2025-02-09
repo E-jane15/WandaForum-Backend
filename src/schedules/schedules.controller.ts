@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpException, HttpStatus } from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
@@ -17,5 +17,13 @@ export class SchedulesController {
   return this.schedulesService.createSchedule(createScheduleDto)
   }
 
- 
+  @Delete(':id')
+  async cancelSchedule(@Param('id') scheduleId: string) {
+    try {
+      const result = await this.schedulesService.cancelSchedule(scheduleId);
+      return result; // { message: 'Schedule canceled successfully' }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
