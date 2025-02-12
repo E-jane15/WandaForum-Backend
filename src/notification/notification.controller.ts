@@ -11,6 +11,11 @@ export class NotificationController {
   async sendNotification(@Body() createNotificationDto: CreateNotificationDto) {
     return this.notificationService.sendNotification(createNotificationDto);
   }
+  @Get()
+async getAll() {
+  return this.notificationService.getAll(); // Ensure this method exists in NotificationService
+}
+
 
 
   @Get('user/:userId')

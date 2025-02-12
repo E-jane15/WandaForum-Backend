@@ -5,10 +5,10 @@ import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class SchedulesService {
-    constructor(private databaseService: DatabaseService) {}
-  
-    async createSchedule(createScheduleDto: CreateScheduleDto) {
-      try{
+  constructor(private databaseService: DatabaseService) {}
+
+  async createSchedule(createScheduleDto: CreateScheduleDto) {
+    try {
       return await this.databaseService.schedule.create({
         data: {
           interviewType: createScheduleDto.interviewType,
@@ -16,12 +16,15 @@ export class SchedulesService {
           practiceLevel: createScheduleDto.practiceLevel,
           date: createScheduleDto.date,
           time: createScheduleDto.time,
-          userId:createScheduleDto.userId
+          userId: createScheduleDto.userId,
         },
-        })
-      } catch (error){
-        throw new Error (`Failed to create schedule:${error.message}`)
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to create schedule: ${error.message}`);
+      } else {
+        throw new Error("Failed to create schedule: An unknown error occurred");
       }
-      
     }
   }
+}

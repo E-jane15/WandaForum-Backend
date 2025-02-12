@@ -9,29 +9,34 @@ datasource db {
 
 model User {
   id             String         @id @default(uuid())
-  userName       String         @unique @map("user_name")
+  userName       String         @unique
   email          String         @unique
-  password       String        
-
+  password       String
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
   schedule       Schedule[]
-  questions      Question[] // =====Questions posted by the user
+  questions      Question[] // Questions posted by the user
   savedQuestions Question[]     @relation("UserSavedQuestions") // Questions saved by the user
-  answers        Answer[] //======= Answers given by the user
-  questionLikes  QuestionLike[] // ======CQuestions liked by the user
-  notifications Notification[]
+  answers        Answer[] // Answers given by the user
+  questionLikes  QuestionLike[] // Questions liked by the user
+  notifications  Notification[]
+  isVerified     Boolean        @default(false)
+  verificationToken String?
+  requestedMocks  MockInterviewRequest[] @relation("Requester")
+  receivedMocks   MockInterviewRequest[] @relation("Recipient")
+    followedThreads ThreadFollower[]
 
   @@map("user")
 }
 
+/// Represents a scheduled interview.
 model Schedule {
   id            String   @id @default(uuid())
-  userId        String   @map("user_id")
+  userId        String
   user          User     @relation(fields: [userId], references: [id])
-  interviewType String   @map("interview_type")
-  peerType      String   @map("peer_type")
-  practiceLevel String   @map("practice_level")
+  interviewType String
+  peerType      String
+  practiceLevel String
   date          DateTime
   time          DateTime
   createdAt     DateTime @default(now()) @map("created_at")
@@ -40,22 +45,24 @@ model Schedule {
   @@map("schedule")
 }
 
+/// Represents a question posted by a user.
 model Question {
   id        String   @id @default(uuid())
   title     String
   content   String
-  userId    String   @map("user_id")
+  userId    String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
 
-  savedByUsers User[]         @relation("UserSavedQuestions") // Users who saved this question
-  tags         QuestionTag[] // Tags associated with the question
-  answers      Answer[] // Answers to this question
+  savedByUsers User[]         @relation("UserSavedQuestions") 
+  tags         QuestionTag[] 
+  answers      Answer[] 
   likes        QuestionLike[]
 
   @@map("question")
 }
+
 
 model Tag {
   id        String        @id @default(uuid())
@@ -65,9 +72,10 @@ model Tag {
   @@map("tag")
 }
 
+
 model QuestionTag {
-  questionId String   @map("question_id")
-  tagId      String   @map("tag_id")
+  questionId String
+  tagId      String
   question   Question @relation(fields: [questionId], references: [id])
   tag        Tag      @relation(fields: [tagId], references: [id])
 
@@ -75,11 +83,12 @@ model QuestionTag {
   @@map("question_tag")
 }
 
+
 model Answer {
   id         String   @id @default(uuid())
   content    String
-  userId     String   @map("user_id")
-  questionId String   @map("question_id")
+  userId     String
+  questionId String
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])
@@ -88,9 +97,10 @@ model Answer {
   @@map("answer")
 }
 
+
 model QuestionLike {
-  userId     String   @map("user_id")
-  questionId String   @map("question_id")
+  userId     String
+  questionId String
   createdAt  DateTime @default(now()) @map("created_at")
   user       User     @relation(fields: [userId], references: [id])
   question   Question @relation(fields: [questionId], references: [id])
@@ -99,6 +109,7 @@ model QuestionLike {
   @@map("question_like")
 }
 
+
 model Notification {
   id          Int      @id @default(autoincrement())
   message     String
@@ -106,13 +117,60 @@ model Notification {
   createdAt   DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  interviewId Int?
+  interviewId String?
   interview   Interview? @relation(fields: [interviewId], references: [id])
+   link      String
+
+  
 }
 
+
 model Interview {
-  id            Int            @id @default(autoincrement())
-  title         String
-  date          DateTime
-  notifications Notification[]
+  id            String   @id @default(uuid())
+  userEmail     String
+  interviewDate DateTime
+  candidateEmail String
+  createdAt     DateTime @default(now())
+  notifications Notification[] // Added opposite relation field
+  confirmed  Boolean  @default(false)
+}
+
+model MockInterviewRequest {
+  id          String   @id @default(uuid())
+  requesterId String
+  recipientId String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+
+  requester   User     @relation("Requester", fields: [requesterId], references: [id])
+  recipient   User     @relation("Recipient", fields: [recipientId], references: [id])
+}
+model EmailLog {
+  id          String   @id @default(uuid())
+  recipient   String
+  subject     String
+  content     String
+  sentAt      DateTime @default(now())
+}
+model Thread {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  replies     Reply[]
+  followers   ThreadFollower[]
+}
+model Reply {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  thread    Thread   @relation(fields: [threadId], references: [id])
+  threadId  String
+}
+model ThreadFollower {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  thread    Thread   @relation(fields: [threadId], references: [id])
+  threadId  String
 }
