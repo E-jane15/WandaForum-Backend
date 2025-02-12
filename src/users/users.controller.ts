@@ -8,9 +8,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto, LoginDto, SendOtpDto, VerifyEmailDto } from './dto';
 
 @Controller('users')
 export class UsersController {
@@ -31,5 +30,17 @@ export class UsersController {
   @Get('profile')
   getProfile(@Req() req: any) {
     return req.user;
+  }
+
+  @Post('send-otp-email')
+  async sendOtp(@Body(ValidationPipe) sendOtpDto: SendOtpDto) {
+    const result = await this.usersService.sendOtp(sendOtpDto);
+    return result;
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body(ValidationPipe) verifyEmailDto: VerifyEmailDto) {
+    const result = await this.usersService.verifyEmail(verifyEmailDto);
+    return result;
   }
 }
