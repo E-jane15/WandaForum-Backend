@@ -41,7 +41,7 @@ import { InterviewModule } from './interview/interview.module';
     PrismaModule,
     NotificationModule,
     ScheduleModule.forRoot(),
- (notification backend)
+ (notification backend, MailModule)
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
