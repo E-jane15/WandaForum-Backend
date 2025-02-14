@@ -36,6 +36,7 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   // Remove the redefinition of emailLog
+  emailLog: any;
   async onModuleInit() {
     await this.$connect();
   }
