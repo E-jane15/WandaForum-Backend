@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { AvailabilitiesModule } from './availabilities/availabilities.module';
+import { SchedulesModule } from './schedules/schedules.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { ConfigModule } from '@nestjs/config';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    SchedulesModule,
+    AvailabilitiesModule,
+    ScheduleModule.forRoot(), AvailabilitiesModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
