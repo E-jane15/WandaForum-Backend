@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsNotEmpty, IsString, IsDate, } from "class-validator";
 
 export class CreateAvailabilityDto {
   @IsString()
@@ -21,17 +22,15 @@ export class CreateAvailabilityDto {
   @IsNotEmpty()
   rolePreference: string;
 
-  @IsString()
+  @IsDate()
+  @Type(() => Date)
   @IsNotEmpty()
   startTime: Date;
 
-  @IsString()
+  @IsDate()
+  @Type(() => Date)
   @IsNotEmpty()
   endTime: Date;
-
-  @IsString()
-  @IsNotEmpty()
-  date: Date;
   
   status?: string;
 }

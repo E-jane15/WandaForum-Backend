@@ -8,56 +8,67 @@ export class SchedulesService {
     constructor(private databaseService: DatabaseService) {}
   
     async createSchedule(createScheduleDto: CreateScheduleDto) {
-      try{
+      try {
+        // Convert date and time to Date objects
+        const dateObj = new Date(createScheduleDto.date);
+        const timeObj = new Date(createScheduleDto.time);
+    
         // Check for an existing session with the same time and interview type
-      const existingSession = await this.databaseService.session.findFirst({
-        where: {
-          interviewType: createScheduleDto.interviewType,
-          date: createScheduleDto.date,
-          time: createScheduleDto.time,
-        },
-        include: { users: true },
-      });
-
-      let sessionId: string;
-      let meetingLink: string;
-
-      if (existingSession && existingSession.users.length === 1) {
-        // Join the existing session
-        sessionId = existingSession.id;
-        meetingLink = existingSession.meetingLink;
-      } else {
-        // Create a new session with a unique meeting link
-        meetingLink = this.generateMeetingLink();
-        const newSession = await this.databaseService.session.create({
+        const existingSession = await this.databaseService.session.findFirst({
+          where: {
+            interviewType: createScheduleDto.interviewType, // Ensure interviewType is properly used
+            date: dateObj,
+            time: timeObj,
+          },
+          include: { users: true },
+        });
+    
+        let sessionId: string;
+        let meetingLink: string;
+    
+        if (existingSession && existingSession.users.length === 1) {
+          // Join the existing session
+          sessionId = existingSession.id;
+          meetingLink = existingSession.meetingLink;
+        } else {
+          // Create a new session with a unique meeting link
+          meetingLink = this.generateMeetingLink();
+          console.log("Interview Type before session creation:", createScheduleDto.interviewType);
+          console.log("Practice before session creation:", createScheduleDto.practiceLevel);
+          const newSession = await this.databaseService.session.create({
+            data: {
+              interviewType: createScheduleDto.interviewType, // ✅ Ensure this field is correctly assigned
+              date: dateObj,
+              time: timeObj,
+              meetingLink,
+            },
+          });
+          sessionId = newSession.id;
+        }
+    
+        // Save the schedule with the session ID
+        return await this.databaseService.schedule.create({
           data: {
             interviewType: createScheduleDto.interviewType,
-            date: createScheduleDto.date,
-            time: createScheduleDto.time,
-            meetingLink,
+            peerType: createScheduleDto.peerType,
+            practiceLevel: createScheduleDto.practiceLevel,
+            date: dateObj,
+            time: timeObj,
+            userId: createScheduleDto.userId,
+            sessionId,
+            
+          },
+          include: {
+            user: true,
+            session: true,
           },
         });
-        sessionId = newSession.id;
+    
+      } catch (error) {
+        throw new Error(`Failed to create schedule: ${error.message}`);
       }
-
-      // Save the schedule with the session ID
-      return await this.databaseService.schedule.create({
-        data: {
-          interviewType: createScheduleDto.interviewType,
-          peerType: createScheduleDto.peerType,
-          practiceLevel: createScheduleDto.practiceLevel,
-          date: createScheduleDto.date,
-          time: createScheduleDto.time,
-          userId: createScheduleDto.userId,
-          sessionId,
-        },
-      });
-      
-      } catch (error){
-        throw new Error (`Failed to create schedule:${error.message}`)
-      }
-      
     }
+
     private generateMeetingLink(): string {
       return `https://meet.jit.si/${Math.random().toString(36).substring(7)}`;
     }
@@ -84,6 +95,20 @@ export class SchedulesService {
       }
     }
 
-    
-      }
-  
+
+      async getUserSchedules(userId: string) {
+        try {
+            const schedules = await this.databaseService.schedule.findMany({
+                where: { userId },
+                include: {
+                    session: true, // Include session details
+                    user: true, // Include user details
+                },
+            });
+
+            return schedules;
+        } catch (error) {
+            throw new Error(`Failed to fetch schedules: ${error.message}`);
+        }
+    }
+}

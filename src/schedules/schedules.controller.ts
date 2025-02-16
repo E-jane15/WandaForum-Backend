@@ -13,6 +13,7 @@ export class SchedulesController {
   @Post('save')
   async createSchedule(@Body() createScheduleDto: CreateScheduleDto){
     console.log('Interview received:', createScheduleDto);
+  console.log(createScheduleDto.userId)
     // Handle logic to save or process the interview
   return this.schedulesService.createSchedule(createScheduleDto)
   }
@@ -26,4 +27,10 @@ export class SchedulesController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+
+@Get('/users/:userId')
+    async getUserSchedules(@Param('userId') userId: string) {
+        return this.schedulesService.getUserSchedules(userId);
+    }
 }

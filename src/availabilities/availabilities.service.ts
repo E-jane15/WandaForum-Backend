@@ -1,110 +1,89 @@
 import { Injectable } from '@nestjs/common';
-import { Cron,CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
-import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { DateTime } from 'luxon'; // Importing Luxon for date manipulation
 
 @Injectable()
 export class AvailabilitiesService {
   constructor(private databaseService: DatabaseService) {}
 
-  /*@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // Run at midnight every day
+  // Cron job to clear expired availabilities every minute
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     await this.clearExpiredAvailabilities();
-  }*/
-
-  @Cron(CronExpression.EVERY_MINUTE) // Run every minute
-  async handleCron() {
-    await this.updateExpiredSlots();
   }
 
-
+  // Create or update availability
   async createAvailability(createAvailabilityDto: CreateAvailabilityDto) {
     try {
-      
-    return this.databaseService.availability.create({
-      data: {
-        userId: createAvailabilityDto.userId, // userId is now a string
-        focusArea: createAvailabilityDto.focusArea,
-        meetingPlatform: createAvailabilityDto.meetingPlatform,
-        meetingLink: createAvailabilityDto.meetingLink,
-        rolePreference: createAvailabilityDto.rolePreference,
-        startTime: createAvailabilityDto.startTime,
-        endTime: createAvailabilityDto.endTime,
-        status: createAvailabilityDto.status || 'available',
-        date: createAvailabilityDto.date,
-      },
-    });
-    } catch (error) {
-      console.log('Error creating availabilities', error)
-      throw new error(`Failed to create avilability${error.message}`)
-    }
-    
-  }
+      // Get current date in ISO format to ensure it's valid for the date field
+      const currentDate = DateTime.now().toISO();  // Full ISO format (date and time)
 
-  async getAvailabilities() {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-  
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
-  
-    return this.databaseService.availability.findMany({
-      where: {
-        date: {
-          gte: startOfDay,
-          lt: endOfDay,
+      // Combine current date with the provided start and end time
+      const startTime = DateTime.fromISO(`${DateTime.now().toISODate()}T${createAvailabilityDto.startTime}`).toISO();
+      const endTime = DateTime.fromISO(`${DateTime.now().toISODate()}T${createAvailabilityDto.endTime}`).toISO();
+
+      return this.databaseService.availability.upsert({
+        where: { id: createAvailabilityDto.userId },
+        update: {
+          focusArea: createAvailabilityDto.focusArea,
+          meetingPlatform: createAvailabilityDto.meetingPlatform,
+          meetingLink: createAvailabilityDto.meetingLink,
+          rolePreference: createAvailabilityDto.rolePreference,
+          startTime: startTime,  // Corrected format for start time
+          endTime: endTime,      // Corrected format for end time
+          status: 'available',
+          // Set current date automatically for update, using full datetime format
+          date: currentDate,
         },
-      },
-    });
+        create: {
+          userId: createAvailabilityDto.userId,
+          focusArea: createAvailabilityDto.focusArea,
+          meetingPlatform: createAvailabilityDto.meetingPlatform,
+          meetingLink: createAvailabilityDto.meetingLink,
+          rolePreference: createAvailabilityDto.rolePreference,
+          startTime: startTime,  // Corrected format for start time
+          endTime: endTime,      // Corrected format for end time
+          status: 'available',
+          // Set current date automatically for create, using full datetime format
+          date: currentDate,
+        },
+      });
+    } catch (error) {
+      console.log('Error creating availability:', error);
+      throw new Error(`Failed to create availability: ${error.message}`);
+    }
   }
-  
 
+  // Get all availabilities
+  async getAvailabilities() {
+    return this.databaseService.availability.findMany();
+  }
+
+  // Get availability by user ID
   async getAvailabilityByUserId(userId: string) {
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD
-    const formattedDate = new Date(currentDate); // Convert to Date object
-  
     return this.databaseService.availability.findFirst({
-      where: {
-        userId: userId,  // Pass userId dynamically
-        date: formattedDate,  // Use a Date object, not a string
-      },
+      where: { userId },
     });
   }
 
+  // Update the availability status (e.g., change to 'unavailable')
+  async updateStatus(id: string, newStatus: string) {
+    return this.databaseService.availability.update({
+      where: { id },
+      data: { status: newStatus },
+    });
+  }
+
+  // Clear expired availabilities (those with an end time in the past)
   async clearExpiredAvailabilities() {
-    const currentDate = new Date();
-    
+    const currentTime = new Date();
+
     await this.databaseService.availability.deleteMany({
       where: {
-        date: {
-          lt: currentDate, // Pass a Date object, not a string
-        },
+        endTime: { lt: currentTime },
       },
     });
-  }
-
-  async updateExpiredSlots() {
-    const currentDate = new Date()//.toISOString().split('T')[0]; // Get current date
-    const currentTime = new Date()//.toLocaleTimeString('en-US', { hour12: false }); // Get current time in HH:MM:SS format
-
-    // Find all availabilities for the current day that have expired
-    const expiredSlots = await this.databaseService.availability.findMany({
-      where: {
-        date: currentDate,
-        endTime: { lt: currentTime }, // Slots where endTime is less than current time
-        status: 'available', // Only update slots that are still marked as available
-      },
-    });
-
-    // Update the status of expired slots to 'unavailable'
-    for (const slot of expiredSlots) {
-      await this.databaseService.availability.update({
-        where: { id: slot.id },
-        data: { status: 'unavailable' },
-      });
-    }
   }
 }
-
-
