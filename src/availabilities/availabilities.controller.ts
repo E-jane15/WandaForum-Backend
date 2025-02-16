@@ -8,7 +8,17 @@ export class AvailabilitiesController {
 
   @Post('save')
   async createAvailability(@Body() createAvailabilityDto: CreateAvailabilityDto) {
-    return this.availabilitiesService.createAvailability(createAvailabilityDto);
+    try {
+      
+      return this.availabilitiesService.createAvailability(createAvailabilityDto);
+    } catch (error) {
+      console.log('Error', error)
+    }
+  }
+
+  @Get('availability')
+  async getAvailabilities() {
+    return this.availabilitiesService.getAvailabilities();
   }
 
   @Get(':userId')
