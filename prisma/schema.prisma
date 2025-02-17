@@ -101,16 +101,16 @@ model QuestionLike {
   @@map("question_like")
 }
 
-model Notification {
-  id          Int      @id @default(autoincrement())
-  message     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  interviewId Int?
-  interview   Interview? @relation(fields: [interviewId], references: [id])
-}
+// model Notification {
+//   id          Int      @id @default(autoincrement())
+//   message     String
+//   isRead      Boolean  @default(false)
+//   createdAt   DateTime @default(now())
+//   userId      String
+//   user        User     @relation(fields: [userId], references: [id])
+//   interviewId Int?
+//   interview   Interview? @relation(fields: [interviewId], references: [id])
+// }
 
 model Interview {
   id            Int            @id @default(autoincrement())
