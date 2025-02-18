@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -31,5 +32,13 @@ export class UsersController {
   @Get('profile')
   getProfile(@Req() req: any) {
     return req.user;
+  }
+
+  @Post('verify')
+  async verifyUser(
+    @Body('userId') userId: string,
+    @Body('verificationToken') verificationToken: string,
+  ): Promise<User> {
+    return this.usersService.verifyUser(userId, verificationToken);
   }
 }

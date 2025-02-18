@@ -1,42 +1,84 @@
-import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaClient } from '@prisma/client';
-import { MailService } from '../mail/mail.service';
-import { isWithinInterval, addHours, subHours } from 'date-fns';
-
-const prisma = new PrismaClient();
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from 'prisma/prisma.service';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ReminderService {
-  constructor(private readonly mailService: MailService) {}
+  private readonly logger = new Logger(ReminderService.name);
 
-  @Cron(CronExpression.EVERY_HOUR)  // Runs every hour
-  async checkUpcomingInterviews() {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailerService: MailerService,
+  ) {}
+
+  // Fetch all reminders
+  async getAllReminders() {
+    return this.prisma.interview.findMany({
+      where: { confirmed: true },
+    });
+  }
+
+  // Fetch a reminder by interview ID
+  async getReminderByInterviewId(interviewId: string) {
+    return this.prisma.interview.findUnique({
+      where: { id: interviewId },
+    });
+  }
+
+  // Send an interview reminder email
+  async sendReminderEmail(interviewId: string) {
+    try {
+      // Fetch interview details
+      const interview = await this.prisma.interview.findUnique({
+        where: { id: interviewId },
+      });
+
+      if (!interview) {
+        this.logger.warn(`Interview not found: ${interviewId}`);
+        return { error: 'Interview not found' };
+      }
+
+      // Send email
+      await this.mailerService.sendMail({
+        to: interview.userEmail,
+        subject: '⏳ Interview Reminder - 30 Minutes Left!',
+        template: './reminder', // Reference the template file
+        context: {
+          candidateEmail: interview.candidateEmail,
+          interviewDate: interview.interviewDate.toISOString(),
+        },
+      });
+
+      this.logger.log(`Reminder email sent successfully for interview ${interviewId}`);
+      return { message: 'Reminder email sent successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to send reminder email for interview ${interviewId}: ${error.message}`);
+      return { error: 'Failed to send reminder email' };
+    }
+  }
+
+  // Cron Job: Check every 5 minutes for interviews happening in 30 minutes
+  @Cron('*/5 * * * *') // Runs every 5 minutes
+  async sendAutomaticReminders() {
     const now = new Date();
-    
-    // Fetch interviews scheduled within the next 24 hours
-    const interviews = await prisma.interview.findMany({
+    const upcomingInterviews = await this.prisma.interview.findMany({
       where: {
         interviewDate: {
-          gte: now, // Greater than or equal to now (future interviews)
-          lte: addHours(now, 24), // Less than or equal to 24 hours from now
+          gte: now,
+          lte: new Date(now.getTime() + 30 * 60 * 1000), // Next 30 minutes
         },
+        confirmed: true,
       },
     });
 
-    for (const interview of interviews) {
-      const interviewDate = new Date(interview.interviewDate); // Convert string to Date if necessary
-      const { candidateEmail, id } = interview;
+    if (upcomingInterviews.length === 0) {
+      this.logger.log('No upcoming interviews found for reminders.');
+      return;
+    }
 
-      // Check if the interview is within the next 24 hours
-      if (isWithinInterval(interviewDate, { start: now, end: addHours(now, 24) })) {
-        // Check if the interview is within the next 1 hour
-        if (isWithinInterval(interviewDate, { start: now, end: addHours(now, 1) })) {
-          await this.mailService.sendInterviewReminderEmail(candidateEmail, '1 hour');
-        } else {
-          await this.mailService.sendInterviewReminderEmail(candidateEmail, '1 hour ');
-        }
-      }
+    for (const interview of upcomingInterviews) {
+      await this.sendReminderEmail(interview.id);
     }
   }
 }

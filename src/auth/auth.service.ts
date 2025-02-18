@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from '../users/dto/create-user.dto'; // Adjust the path as needed
+
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     private mailerService: MailerService,
   ) {}
 
-  async registerUser(dto: RegisterDto) {
+  async registerUser(dto: CreateUserDto) {
     const { email ,password,userName } = dto;
   
     // email: string, password: string) 

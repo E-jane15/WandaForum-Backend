@@ -24,7 +24,7 @@ async getAll() {
   }
 
   @Get('interview/:interviewId')
-  async getNotificationsByInterview(@Param('interviewId') interviewId: number) {
+  async getNotificationsByInterview(@Param('interviewId') interviewId: string) {
     return this.notificationService.getNotificationsByInterview(interviewId);
   }
 

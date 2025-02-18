@@ -5,39 +5,45 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { PrismaService } from 'prisma/prisma.service';
+import { MailService } from 'src/mail/mail.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly databaseService: DatabaseService,
     private readonly jwtService: JwtService,
+      private readonly prisma: PrismaService,
+        private readonly emailService: MailService,
   ) {}
 
   async findByEmail(email: string) {
-    return this.databaseService.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async findById(id: string) {
     console.log(id);
-    return this.databaseService.user.findFirst({ where: { id } });
+    return this.prisma.user.findFirst({ where: { id } });
   }
 
-  async register(createUserDto: CreateUserDto) {
+  async register(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.findByEmail(createUserDto.email);
     if (existingUser) {
       throw new ConflictException('User already exists');
     }
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    return this.databaseService.user.create({
+    const user = this.prisma.user.create({
       data: {
         userName: createUserDto.userName,
         email: createUserDto.email,
         password: hashedPassword,
       },
     });
+    // Send a welcome email after successful registration
+    await this.emailService.sendWelcomeEmail(createUserDto.email, createUserDto.userName);
+    return user;
   }
 
   async validateUser(loginDto: LoginDto) {
@@ -64,4 +70,20 @@ export class UsersService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+    // Verify a user
+    async verifyUser(userId: string, verificationToken: string): Promise<User> {
+      const user = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isVerified: true,
+          verificationToken: null,
+        },
+      });
+  
+      // Send a welcome email after successful verification
+      await this.emailService.sendWelcomeEmail(user.email, user.userName);
+      
+      return user;
+    }
 }

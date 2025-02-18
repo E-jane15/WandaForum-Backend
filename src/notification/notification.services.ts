@@ -1,10 +1,12 @@
+
+
+
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 import { Notification, User } from '@prisma/client';
-
-
+import { type } from 'os';
 
 @Injectable()
 export class NotificationService {
@@ -13,39 +15,38 @@ export class NotificationService {
     private readonly mailService: MailService,
   ) {}
 
-  async createNotification(data: {
-    id: number;
-    userId: string;
-    message: string;
-    type: string;
-  }): Promise<Notification> {
+  async createNotification(data: CreateNotificationDto): Promise<Notification> {
     return this.prisma.notification.create({
-data : {
-  userId: data.userId,
-  message: data.message,
-  type: data.type,
-  isRead: false, 
-
-  
-}, 
-      
-     
+      data: {
+        link: "",
+        userId: data.userId as never,
+        message: data.message,
+        type: data.type,
+        isRead: false,
+      },
     });
   }
 
   async getAll() {
-    return await this.prisma.notification.findMany(); // Adjust based on your model
+    return await this.prisma.notification.findMany();
+  }
+
+  async getUnique(notificationId: number) {
+    return await this.prisma.notification.findUnique({
+      where: {id: notificationId}
+    });
   }
 
   async sendNotification(createNotificationDto: CreateNotificationDto) {
     const { userId, interviewId, message } = createNotificationDto;
+
     const notification = await this.prisma.notification.create({
-    
-        data: {
-          message:  message,
-          userId: userId,
-          interviewId: interviewId,
-          link: `/interviews/${interviewId} string`
+      data: {
+    type:'string',
+        message,
+        userId,
+        interviewId,
+        link: `/interviews/${String(interviewId)}`,
       },
     });
 
@@ -57,19 +58,30 @@ data : {
       await this.mailService.sendNotificationEmail(
         user.email,
         'New Notification from Interview Platform',
-        message,
+     
+        `<p>${message}</p>`
       );
     } else {
-      // eslint-disable-next-line prettier/prettier
       console.warn(`User with ID ${userId} does not have a valid email address.`);
     }
 
     return notification;
   }
 
+  async sendThreadUpdateNotifications(threadId: string) {
+    console.log("Implement this part", threadId);
+    
+  }
   async getAllNotifications(userId: string) {
     return await this.prisma.notification.findMany({
       where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getNotificationsByInterview(interviewId: string) {
+    return await this.prisma.notification.findMany({
+      where: { interviewId},
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -86,79 +98,4 @@ data : {
       where: { id: notificationId },
     });
   }
-
-  async sendMockInterviewRequestEmail(requester: User, recipient: User, requestId: string) {
-    const acceptUrl = `https://yourfrontend.com/peer-mock/accept/${requestId}`;
-    const rejectUrl = `https://yourfrontend.com/peer-mock/reject/${requestId}`;
-  
-    const htmlContent = `
-      <h2>New Mock Interview Request</h2>
-      <p><strong>${requester.userName}</strong> has requested a peer mock interview with you.</p>
-      <p>Click below to respond:</p>
-      <a href="${acceptUrl}" style="padding: 10px 20px; background: green; color: white; text-decoration: none; margin-right: 10px;">Accept</a>
-      <a href="${rejectUrl}" style="padding: 10px 20px; background: red; color: white; text-decoration: none;">Reject</a>
-    `;
-  
-    await this.mailService.sendMail({
-      to: recipient.email,
-      subject: 'Peer Mock Interview Request',
-      html: htmlContent,
-    });
-  
-    // Store in database
-    await this.prisma.emailLog.create({
-      data: {
-        recipient: recipient.email,
-        subject: 'Peer Mock Interview Request',
-        content: htmlContent,
-      },
-    });
-  
-    console.log(`Email sent to ${recipient.email}`);
-  }
-  async sendThreadUpdateNotifications(threadId: string) {
-    // Find all users following this thread
-    const followers = await this.prisma.threadFollower.findMany({
-      where: { threadId },
-      include: { user: true },
-    });
-
-    if (!followers.length) return; // No one to notify
-
-    // Find the latest reply
-    const latestReply = await this.prisma.reply.findFirst({
-      where: { threadId },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!latestReply) return;
-
-    const thread = await this.prisma.thread.findUnique({
-      where: { id: threadId },
-    });
-
-    const notificationMessage = `New reply in thread: ${thread.title}`;
-
-    for (const { user } of followers) {
-      // Create in-app notification
-      await this.prisma.notification.create({
-        data: {
-          userId: user.id,
-          message: notificationMessage,
-          link: `/community/thread/${threadId}`,
-        } ,
-      });
-
-      // Send email notification
-      await this.mailService.sendNotificationEmail(
-        user.email,
-        'Thread Update',
-        `A new reply was posted in '${thread.title}'. 
-        // Click below to view it.`,
-        // `https://wandaforum.com/community/thread/${threadId}`
-      );
-    }
-  }
-  
-  
 }

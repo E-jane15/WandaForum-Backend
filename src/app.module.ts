@@ -22,8 +22,9 @@ import { InterviewModule } from 'src/interview/interview.module';
 import { ReminderModule } from './reminder/reminder.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { SchedulesModule } from './schedules/schedules.module';
-import { NotificationsService } from './notifications/notifications.service';
-import { NotificationsController } from './notifications/notifications.controller';
+import { CronModule } from './cron/cron.module';
+import { NotificationController } from './notification/notification.controller';
+import { NotificationService } from './notification/notification.services';
 
 @Module({
   imports: [
@@ -49,29 +50,22 @@ import { NotificationsController } from './notifications/notifications.controlle
     PrismaModule,
     InterviewModule,
     NotificationModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql', // Change to 'postgres' if using PostgreSQL
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // Set to false in production
-    }),
+    CronModule,
+    
     ScheduleModule.forRoot(), // Fixed this to use ScheduleModule correctly
-    SchedulesModule, // Import SchedulesModule properly
+    SchedulesModule, CronModule, // Import SchedulesModule properly
   ],
   controllers: [
     AppController,
     MockInterviewController,
-    NotificationsController, // Ensure MockInterviewController is registered
+    NotificationController,
   ],
   providers: [
     AppService,
     JwtStrategy,
     MockInterviewService, // Ensure MockInterviewService is properly registered
-    CronService, NotificationsService, // Ensure CronService is included
+    CronService, 
+    NotificationService,
   ],
 })
 export class AppModule {}

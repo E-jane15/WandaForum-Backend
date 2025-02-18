@@ -1,12 +1,14 @@
 import { Injectable,Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import * as nodemailer from 'nodemailer';
+// import * as nodemailer from 'nodemailer';
 import { format } from 'date-fns';
+import nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name); // Define logger here
   sendMail: any;
+  transporter: any;
   constructor(private readonly mailerService: MailerService) {}
 
   /**
@@ -185,6 +187,15 @@ async sendInterviewReminderEmail(to: string, interviewTime: string) {
     }
   }
 
+
+
+
+
+
+
+
+
+
 /**
  * Sends an OTP email for email verification
  * @param email - Recipient email address
@@ -204,5 +215,30 @@ async sendOtpEmail(email: string, otp: string): Promise<string> {
     throw new Error('Failed to send OTP email');
   }
 }
+
+async sendWelcomeEmail(to: string, userName: string): Promise<void> {
+  const mailOptions = {
+    from: process.env.GMAIL_USER, // Sender address
+    to, // Recipient address
+    subject: 'Welcome to Wandaforum!',
+    html: `
+      <h1>Hello, ${userName}!</h1>
+      <p>Welcome to Wandaforum! We're excited to have you on board.</p>
+      <p>Start exploring interview questions, mock interviews, and more!</p>
+      <br>
+      <p>Best regards,<br>The Wandaforum Team</p>
+    `,
+  };
+
+  try {
+    await this.transporter.sendMail(mailOptions);
+    console.log(`Welcome email sent to ${to}`);
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+  }
+}
+
+
+
 }
 

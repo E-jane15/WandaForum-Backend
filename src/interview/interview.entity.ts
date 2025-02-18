@@ -2,8 +2,10 @@
 
 // // interview.entity.ts
 // import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-// import { Candidate } from './candidate.entity';
-// import { Interviewer } from './interviewer.entity';
+// // import { Candidate } from './candidate.entity';
+// import { Interviewer } from 'src/interview/interviewer.entity';
+// import { InterviewService } from './interview.service';
+// import { MockInterviewService } from '../mock-interview/mock-interview.service';
 
 // @Entity('interviews')  // This is the table in the database
 // export class Interview {
@@ -16,9 +18,9 @@
 //   @Column()  // Status of the interview (e.g., Scheduled, Completed)
 //   status: string;
 
-//   @ManyToOne(() => Candidate, (candidate) => candidate.interviews)
+//   @ManyToOne(() => RTCIceCandidate, (candidate) => RTCIceCandidate.MockInterviewService)
 //   @JoinColumn({ name: 'candidate_id' })
-//   candidate: Candidate;
+//   candidate: RTCIceCandidate;
 
 //   @ManyToOne(() => Interviewer, (interviewer) => interviewer.interviews)
 //   @JoinColumn({ name: 'interviewer_id' })

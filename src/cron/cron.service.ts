@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationService } from 'src/notification/notification.services';
 
 @Injectable()
 export class CronService {
-  constructor(private notificationsService: NotificationsService, private prisma: PrismaService) {}
+  constructor(private notificationsService: NotificationService, private prisma: PrismaService) {}
 
   @Cron('*/5 * * * *') // ==================Runs every 5 minutes
   async checkForNewReplies() {
