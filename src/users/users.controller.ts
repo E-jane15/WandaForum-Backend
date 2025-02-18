@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+  UsePipes,
   ValidationPipe,
   UseGuards,
   Req,
@@ -12,26 +13,38 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
+import { SendOtpDto } from 'src/dto/send-otp.dto';
+import { VerifyEmailDto } from 'src/dto/verify-email.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
-  register(@Body(ValidationPipe) createUserDto: CreateUserDto) {
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  register(@Body() createUserDto: CreateUserDto) {
     return this.usersService.register(createUserDto);
   }
 
   @Post('login')
-  async login(@Body(ValidationPipe) loginDto: LoginDto) {
-    const user = await this.usersService.login(loginDto);
-    return user;
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async login(@Body() loginDto: LoginDto) {
+    return this.usersService.login(loginDto);
+  }
+
+  @Post('logout')
+  logout() {
+    return { message: 'User logged out successfully' };
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Req() req: any) {
-    return req.user;
+    return {
+      id: req.user.id,
+      email: req.user.email,
+      userName: req.user.userName, // ✅ Ensure this is included
+    };
   }
 
   @Post('verify')
@@ -40,5 +53,17 @@ export class UsersController {
     @Body('verificationToken') verificationToken: string,
   ): Promise<User> {
     return this.usersService.verifyUser(userId, verificationToken);
+  }
+
+  @Post('send-otp-email')
+  async sendOtp(@Body(ValidationPipe) sendOtpDto: SendOtpDto) {
+    const result = await this.usersService.sendOtp(sendOtpDto);
+    return result;
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body(ValidationPipe) verifyEmailDto: VerifyEmailDto) {
+    const result = await this.usersService.verifyEmail(verifyEmailDto);
+    return result;
   }
 }

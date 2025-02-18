@@ -1,27 +1,36 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailService } from './mail.service';
 import { MailController } from './mail.controller';
 
 @Module({
   imports: [
-    // Import the MailerModule and configure it
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.EMAIL_HOST, // SMTP host (e.g., 'smtp.gmail.com')
-        port: parseInt(process.env.EMAIL_PORT), // SMTP port (e.g., 587 for Gmail)
-        secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
-        auth: {
-          user: process.env.EMAIL_USER, // Your email address
-          pass: process.env.EMAIL_PASSWORD, // Your email password or app-specific password
+    ConfigModule.forRoot(), // Load environment variables
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>('EMAIL_HOST'),
+          port: configService.get<number>('EMAIL_PORT'),
+          secure: false, // Use `false` for port 587
+          auth: {
+            user: configService.get<string>('EMAIL_USER'),
+            pass: configService.get<string>('EMAIL_PASSWORD'),
+          },
+          tls: {
+            rejectUnauthorized: false, // Try this if Gmail blocks authentication
+          },
         },
-      },
-      defaults: {
-        from: `"No Reply" <${process.env.EMAIL_USER}>`, // Default sender email
-      },
+        defaults: {
+          from: `"No Reply" <${configService.get<string>('EMAIL_USER')}>`,
+        },
+      }),
     }),
   ],
-  providers: [MailService], // Register MailService as a provider
-  exports: [MailService], controllers: [MailController], // Export MailService so other modules can use it
+  providers: [MailService],
+  exports: [MailService],
+  controllers: [MailController],
 })
 export class MailModule {}

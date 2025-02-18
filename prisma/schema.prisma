@@ -25,22 +25,27 @@ model User {
   questionLikes     QuestionLike[]
   schedule          Schedule[]
   savedQuestions    Question[]             @relation("UserSavedQuestions")
-comments            Comment[]
+  comments            Comment[]
+  availability   Availability[]
+
   @@map("user")
 }
 
 /// Represents a scheduled interview.
 model Schedule {
   id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  interviewType String   @map("interview_type")
+  peerType      String   @map("peer_type")
+  practiceLevel String   @map("practice_level")
   date          DateTime
   time          DateTime
+  sessionId     String?  @map("session_id")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  interviewType String
-  peerType      String
-  practiceLevel String
-  userId        String
+
   user          User     @relation(fields: [userId], references: [id])
+  session       Session? @relation(fields: [sessionId], references: [id])
 
   @@map("schedule")
 }
@@ -50,7 +55,11 @@ model Question {
   id           String         @id @default(uuid())
   title        String
   content      String
-  userId       String
+
+ 
+
+  userId       String         @map("user_id")
+
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   answers      Answer[]
@@ -181,4 +190,32 @@ model ThreadFollower {
   threadId String
   thread   Thread @relation(fields: [threadId], references: [id])
   user     User   @relation(fields: [userId], references: [id])
+}
+model Availability {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  focusArea       String   @map("focus_area")
+  meetingPlatform String   @map("meeting_platform")
+  meetingLink     String   @map("meeting_link")
+  rolePreference  String   @map("role_preference")
+  startTime       DateTime @map("start_time")
+  endTime         DateTime @map("end_time")
+  date            DateTime
+  status          String?  @default("available")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  user            User     @relation(fields: [userId], references: [id])
+
+   @@map("availability")
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  interviewType String      @map("interview_type")
+  date          DateTime
+  time          DateTime
+  meetingLink   String    @map("meeting_link")
+  users         Schedule[]
+
+   @@map("session")
 }

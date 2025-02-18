@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule';
+
 import { NotificationModule } from './notification/notification.module';
 import { MockInterviewModule } from './mock-interview/mock-interview.module';
 import { MockInterviewController } from './mock-interview/mock-interview.controller';
@@ -21,10 +21,13 @@ import { MailModule } from './mail/mail.module';
 import { InterviewModule } from 'src/interview/interview.module';
 import { ReminderModule } from './reminder/reminder.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { SchedulesModule } from './schedules/schedules.module';
+
 import { CronModule } from './cron/cron.module';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationService } from './notification/notification.services';
+import { AvailabilitiesModule } from './availabilities/availabilities.module';
+import { SchedulesModule } from './schedules/schedules.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -40,6 +43,15 @@ import { NotificationService } from './notification/notification.services';
         },
       },
     }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
+    }),
+    SchedulesModule,
+    AvailabilitiesModule,
+    ScheduleModule.forRoot(), 
+    AvailabilitiesModule,
     UsersModule,
     DatabaseModule,
     QuestionsModule,
@@ -51,9 +63,6 @@ import { NotificationService } from './notification/notification.services';
     InterviewModule,
     NotificationModule,
     CronModule,
-    
-    ScheduleModule.forRoot(), // Fixed this to use ScheduleModule correctly
-    SchedulesModule, CronModule, // Import SchedulesModule properly
   ],
   controllers: [
     AppController,

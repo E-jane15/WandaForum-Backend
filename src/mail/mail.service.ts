@@ -2,7 +2,7 @@ import { Injectable,Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 // import * as nodemailer from 'nodemailer';
 import { format } from 'date-fns';
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
@@ -44,7 +44,7 @@ export class MailService {
               }
               .header {
                 text-align: center;
-                background-color:rgb(152, 12, 168);
+                background-color: #4caf50;
                 color: white;
                 padding: 10px 0;
                 font-size: 20px;
@@ -187,15 +187,6 @@ async sendInterviewReminderEmail(to: string, interviewTime: string) {
     }
   }
 
-
-
-
-
-
-
-
-
-
 /**
  * Sends an OTP email for email verification
  * @param email - Recipient email address
@@ -236,9 +227,4 @@ async sendWelcomeEmail(to: string, userName: string): Promise<void> {
   } catch (error) {
     console.error('Error sending welcome email:', error);
   }
-}
-
-
-
-}
-
+}}
