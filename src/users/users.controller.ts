@@ -12,6 +12,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '@prisma/client';
+import { SendOtpDto } from 'src/dto/send-otp.dto';
+import { VerifyEmailDto } from 'src/dto/verify-email.dto';
 
 @Controller('users')
 export class UsersController {
@@ -42,5 +45,25 @@ export class UsersController {
       email: req.user.email,
       userName: req.user.userName, // ✅ Ensure this is included
     };
+  }
+
+  @Post('verify')
+  async verifyUser(
+    @Body('userId') userId: string,
+    @Body('verificationToken') verificationToken: string,
+  ): Promise<User> {
+    return this.usersService.verifyUser(userId, verificationToken);
+  }
+
+  @Post('send-otp-email')
+  async sendOtp(@Body(ValidationPipe) sendOtpDto: SendOtpDto) {
+    const result = await this.usersService.sendOtp(sendOtpDto);
+    return result;
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body(ValidationPipe) verifyEmailDto: VerifyEmailDto) {
+    const result = await this.usersService.verifyEmail(verifyEmailDto);
+    return result;
   }
 }

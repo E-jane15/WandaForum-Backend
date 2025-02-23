@@ -8,23 +8,30 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  userName       String         @unique @map("user_name")
-  email          String         @unique
-  password       String
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  id                String                 @id @default(uuid())
+  email             String                 @unique
+  password          String
+  createdAt         DateTime               @default(now()) @map("created_at")
+  updatedAt         DateTime               @updatedAt @map("updated_at")
+  isVerified        Boolean                @default(false)
+  userName          String                 @unique
+  verificationToken String?
+  receivedMocks     MockInterviewRequest[] @relation("Recipient")
+  requestedMocks    MockInterviewRequest[] @relation("Requester")
+  notifications     Notification[]
+  followedThreads   ThreadFollower[]
+  answers           Answer[]
+  questions         Question[]
+  questionLikes     QuestionLike[]
+  schedule          Schedule[]
+  savedQuestions    Question[]             @relation("UserSavedQuestions")
+  comments            Comment[]
   availability   Availability[]
-  answers        Answer[]
-  questions      Question[]
-  questionLikes  QuestionLike[]
-  schedule       Schedule[]
-  savedQuestions Question[]     @relation("UserSavedQuestions")
-  
 
   @@map("user")
 }
 
+/// Represents a scheduled interview.
 model Schedule {
   id            String   @id @default(uuid())
   userId        String   @map("user_id")
@@ -43,11 +50,16 @@ model Schedule {
   @@map("schedule")
 }
 
+/// Represents a question posted by a user.
 model Question {
   id           String         @id @default(uuid())
   title        String
   content      String
+
+ 
+
   userId       String         @map("user_id")
+
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   answers      Answer[]
@@ -68,8 +80,8 @@ model Tag {
 }
 
 model QuestionTag {
-  questionId String   @map("question_id")
-  tagId      String   @map("tag_id")
+  questionId String
+  tagId      String
   question   Question @relation(fields: [questionId], references: [id])
   tag        Tag      @relation(fields: [tagId], references: [id])
 
@@ -80,8 +92,8 @@ model QuestionTag {
 model Answer {
   id         String   @id @default(uuid())
   content    String
-  userId     String   @map("user_id")
-  questionId String   @map("question_id")
+  userId     String
+  questionId String
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
   question   Question @relation(fields: [questionId], references: [id])
@@ -91,8 +103,8 @@ model Answer {
 }
 
 model QuestionLike {
-  userId     String   @map("user_id")
-  questionId String   @map("question_id")
+  userId     String
+  questionId String
   createdAt  DateTime @default(now()) @map("created_at")
   question   Question @relation(fields: [questionId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
@@ -101,6 +113,84 @@ model QuestionLike {
   @@map("question_like")
 }
 
+model Notification {
+  id          Int        @id @default(autoincrement())
+  userId      String
+  message     String
+  isRead      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  interviewId String?
+  link        String
+  type        String
+  interview   Interview? @relation(fields: [interviewId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  
+}
+
+model Interview {
+  id             String         @id @default(uuid())
+  userEmail      String
+  interviewDate  DateTime
+  candidateEmail String
+  createdAt      DateTime       @default(now())
+  confirmed      Boolean        @default(false)
+  notifications  Notification[]
+}
+
+model MockInterviewRequest {
+  id          String   @id @default(uuid())
+  requesterId String
+  recipientId String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  recipient   User     @relation("Recipient", fields: [recipientId], references: [id])
+  requester   User     @relation("Requester", fields: [requesterId], references: [id])
+}
+
+model EmailLog {
+  id        String   @id @default(uuid())
+  recipient String
+  subject   String
+  content   String
+  sentAt    DateTime @default(now())
+}
+
+model Thread {
+  id        String           @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime         @default(now())
+  replies   Reply[]
+  followers ThreadFollower[]
+  comments  Comment[]
+}
+
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  thread    Thread   @relation(fields: [threadId], references: [id])
+  threadId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  threadId  String
+  thread    Thread   @relation(fields: [threadId], references: [id])
+}
+
+model ThreadFollower {
+  id       String @id @default(uuid())
+  userId   String
+  threadId String
+  thread   Thread @relation(fields: [threadId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+}
 model Availability {
   id              String   @id @default(uuid())
   userId          String   @map("user_id")
