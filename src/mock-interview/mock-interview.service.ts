@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { MailService } from '../mail/mail.service';
+import { MailerService } from '@nestjs-modules/mailer';
 import { SendMockRequestDto } from './dto/send-mock.dto';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class MockInterviewService {
   requestMockInterview(requesterId: string, recipientId: string) {
     throw new Error('Method not implemented.');
   }
-  constructor(private prisma: PrismaService, private mailService: MailService) {}
+  constructor(private prisma: PrismaService, private mailService: MailerService) {}
 
   async acceptMockRequest(requestId: string) {
     const request = await this.prisma.mockInterviewRequest.findFirst({

@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { QuestionsModule } from './questions/questions.module';
 import { AuthModule } from './auth/auth.module';
+// import { AvailabilityModule } from './availability/availability.module';
 
 import { PrismaModule } from 'prisma/prisma.module';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
@@ -28,6 +29,10 @@ import { NotificationService } from './notification/notification.services';
 import { AvailabilitiesModule } from './availabilities/availabilities.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MailController } from './mail/mail.controller';
+// import { NotificationService } from 'src/notifications/notifications.service';
+
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -38,9 +43,13 @@ import { ScheduleModule } from '@nestjs/schedule';
       transport: {
         service: 'gmail',
         auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
+      },
+
+      defaults: {
+        from: '"Wandaforum" angelazango2@gmail.com', // Default sender
       },
     }),
     JwtModule.register({
@@ -50,8 +59,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     SchedulesModule,
     AvailabilitiesModule,
-    ScheduleModule.forRoot(), 
-    AvailabilitiesModule,
+    ScheduleModule.forRoot(),
     UsersModule,
     DatabaseModule,
     QuestionsModule,
@@ -68,13 +76,16 @@ import { ScheduleModule } from '@nestjs/schedule';
     AppController,
     MockInterviewController,
     NotificationController,
+    MailController,
   ],
   providers: [
     AppService,
     JwtStrategy,
     MockInterviewService, // Ensure MockInterviewService is properly registered
-    CronService, 
+    CronService,
     NotificationService,
+    NotificationsModule,
+    MailController,
   ],
 })
 export class AppModule {}

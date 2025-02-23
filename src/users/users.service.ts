@@ -15,6 +15,7 @@ import { VerifyEmailDto } from 'src/dto/verify-email.dto';
 
 @Injectable()
 export class UsersService {
+  prisma: any;
   constructor(
     private readonly jwtService: JwtService,
         private readonly databaseService: DatabaseService,
@@ -68,7 +69,9 @@ export class UsersService {
     // Send notification email after registration
     this.mailService.sendNotificationEmail(
       (await user).email,
+      (await user).userName,
       'Welcome to our platform!',
+      'We are happy to have you on our platform.',
       'We are happy to have you on our platform.',
     );
       return user;
@@ -89,6 +92,24 @@ export class UsersService {
     }
     throw new UnauthorizedException('Invalid credentials');
   }
+
+ 
+    async getUserIdByUsername(username: string): Promise<string | null> {
+      const user = await this.prisma.user.findUnique({
+        where: { username },
+      });
+      return user ? user.id : null; // Return user ID or null if user not found
+    }
+
+
+
+
+
+
+
+
+
+
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto);

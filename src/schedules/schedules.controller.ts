@@ -33,4 +33,6 @@ export class SchedulesController {
     async getUserSchedules(@Param('userId') userId: string) {
         return this.schedulesService.getUserSchedules(userId);
     }
+
+    
 }

@@ -15,7 +15,7 @@ export class NotificationsGateway {
   async sendNotification(userId: string, content: string) {
     const notification = await this.notificationsService.createNotification(
       {
-        userId: userId,  
+        userId: 'string',  
    
         message:content,
         type:'community', 

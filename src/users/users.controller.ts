@@ -66,4 +66,37 @@ export class UsersController {
     const result = await this.usersService.verifyEmail(verifyEmailDto);
     return result;
   }
+
+
+  // delete account 
+
+  // @Delete("delete")
+  // async deleteAccount(@Body() body, @Req() req: Request, @Res() res: Response) {
+  //   try {
+  //     const userId = req.user.id;
+  //     const { password } = body;
+
+  //     // Get user from DB
+  //     const user = await this.prisma.user.findUnique({
+  //       where: { id: userId },
+  //     });
+
+  //     if (!user) return res.status(404).json({ message: "User not found" });
+
+  //     // Verify password
+  //     const isMatch = await bcrypt.compare(password, user.password);
+  //     if (!isMatch)
+  //       return res.status(400).json({ message: "Incorrect password" });
+
+  //     // Delete user account
+  //     await this.prisma.user.delete({ where: { id: userId } });
+
+  //     // Clear session/token (if using cookies)
+  //     res.clearCookie("jwt");
+
+  //     return res.json({ message: "Account deleted successfully" });
+  //   } catch (error) {
+  //     return res.status(500).json({ message: "Internal server error" });
+  //   }
+  // }
 }

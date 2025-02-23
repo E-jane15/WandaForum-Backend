@@ -81,4 +81,23 @@ export class ReminderService {
       await this.sendReminderEmail(interview.id);
     }
   }
+
+  
 }
+  // // Send in-app notification
+//   await this.prisma.notification.create({
+//     data: {
+//       userId: interview.userId,  // Assuming the userId is the user receiving the notification
+//       type: 'interview_reminder',
+//       message: `Reminder: Your interview with ${interview.candidateEmail} is starting in 30 minutes!`,
+//       interviewId: interview.id,
+//     },
+//   });
+
+//   this.logger.log(`Reminder email and in-app notification sent successfully for interview ${interviewId}`);
+//   return { message: 'Reminder email and in-app notification sent successfully' };
+// } catch (error) {
+//   this.logger.error(`Failed to send reminder email and notification for interview ${interviewId}: ${error.message}`);
+//   return { error: 'Failed to send reminder' };
+// }
+// }

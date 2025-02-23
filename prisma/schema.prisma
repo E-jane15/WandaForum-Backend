@@ -27,8 +27,10 @@ model User {
   savedQuestions    Question[]             @relation("UserSavedQuestions")
   comments            Comment[]
   availability   Availability[]
+  resetToken       String?
 
   @@map("user")
+  Interview Interview[]
 }
 
 /// Represents a scheduled interview.
@@ -124,18 +126,30 @@ model Notification {
   type        String
   interview   Interview? @relation(fields: [interviewId], references: [id])
   user        User       @relation(fields: [userId], references: [id])
-  
+  eventType    DateTime   @default(now())
 }
 
 model Interview {
-  id             String         @id @default(uuid())
-  userEmail      String
-  interviewDate  DateTime
+  id           String     @id @default(cuid())
+  userId       String
   candidateEmail String
-  createdAt      DateTime       @default(now())
-  confirmed      Boolean        @default(false)
-  notifications  Notification[]
+  userEmail    String
+createdAt      DateTime       @default(now())
+  interviewDate DateTime
+  confirmed    Boolean
+  notifications Notification[]
+   requesterId    String
+  recipientId    String
+  user         User       @relation(fields: [userId], references: [id])
+  
 }
+
+
+
+
+
+
+
 
 model MockInterviewRequest {
   id          String   @id @default(uuid())

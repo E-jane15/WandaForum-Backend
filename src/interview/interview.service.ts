@@ -1,67 +1,17 @@
-// import { Injectable, Logger } from '@nestjs/common';
-// import { Cron, CronExpression } from '@nestjs/schedule';
-// import { PrismaService } from 'src/prisma/prisma.service';
-// import { MailerService } from '@nestjs-modules/mailer';
-// import { format, differenceInMinutes } from 'date-fns';
-
-// @Injectable()
-// export class InterviewService {
-//   private readonly logger = new Logger(InterviewService.name);
-
-//   constructor(
-//     private prisma: PrismaService,
-//     private mailerService: MailerService,
-//   ) {}
-
-//   @Cron(CronExpression.EVERY_MINUTE) // Runs every minute to check for reminders
-//   async sendInterviewReminders() {
-//     const now = new Date();
-//     const interviews = await this.prisma.interview.findMany();
-
-//     for (const interview of interviews) {
-//       const interviewTime = new Date(interview.interviewDate);
-//       const timeDiffMinutes = differenceInMinutes(interviewTime, now);
-
-//       if (timeDiffMinutes === 1440 || timeDiffMinutes === 60) {
-//         // ==================1440 min = 24 hours, 60 min = 1 hour====================
-//         await this.sendReminderEmail(interview.userEmail, interviewTime);
-//       }
-//     }
-//   }
-
-//   private async sendReminderEmail(userEmail: string, interviewTime: Date) {
-//     await this.mailerService.sendMail({
-//       to: userEmail,
-//       subject: 'Interview Reminder',
-//       text: `Hi, your interview is scheduled for ${format(interviewTime, 'PPPppp')}. Please be prepared!`,
-//     });
-
-//     this.logger.log(`Sent reminder to ${userEmail}`);
-//   }
-// }
-
 import { Injectable, Logger } from '@nestjs/common';
-import { MailerService} from '@nestjs-modules/mailer';
-import { Cron,CronExpression } from '@nestjs/schedule';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { format } from 'date-fns';
-
 
 @Injectable()
 export class InterviewService {
-  private readonly logger = new Logger(InterviewService.name);
-    prisma: any;
-
-  constructor(private mailerService: MailerService) {}
-
-  @Cron(CronExpression.EVERY_HOUR) 
-
-  handleCron() {
-    this.sendDailyReminders();
-  }
+  mailerService: any;
+  prisma: any;
+  logger: any;
 
   async sendDailyReminders() {
-    const recipients = ['recipient1@example.com', 'recipient2@example.com']; // Example list of emails
-    const interviewTime = new Date(); // ===================Replace with actual logic to get interview times
+    const recipients = ['recipient1@example.com', 'recipient2@example.com'];
+    const interviewTime = new Date();
 
     for (const email of recipients) {
       await this.sendInterviewReminderEmail(email, interviewTime);
@@ -88,23 +38,14 @@ export class InterviewService {
         html: `
           <!DOCTYPE html>
           <html>
-          <head>
-            <style>
-              /* Your styles here */
-            </style>
-          </head>
+          <head><style></style></head>
           <body>
-            <div class="container">
-              <div class="header">
-                Wandaforum Interview Reminder
-              </div>
-              <div class="content">
-                <p>${message}</p>
-              </div>
-              <div class="footer">
-                <p>Thank you for using Wandaforum!</p>
+            <div>
+              <h2>Wandaforum Interview Reminder</h2>
+              <p>${message}</p>
+              <footer>
                 <p>&copy; ${new Date().getFullYear()} Wandaforum</p>
-              </div>
+              </footer>
             </div>
           </body>
           </html>
@@ -118,34 +59,76 @@ export class InterviewService {
     }
   }
 
-
   async scheduleInterview(userId: string, date: Date) {
-    const interview = await this.prisma.interview.create({
-      data: { userId, date },
-    });
-  
+    const interview = await this.prisma.interview.create({ data: { userId, date } });
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-  
+
     await this.mailerService.sendMail({
       to: user.email,
       subject: 'Interview Scheduled Confirmation',
       html: `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-          <h2 style="color: #4A90E2;">Interview Scheduled!</h2>
+        <div>
+          <h2>Interview Scheduled!</h2>
           <p>Hello <strong>${user.email}</strong>,</p>
           <p>Your interview has been successfully scheduled on:</p>
-          <p style="font-size: 16px; font-weight: bold; color: #D32F2F;">
-            ${date.toLocaleString()} <!-- Formats date nicely -->
-          </p>
-          <p>Please make sure to be prepared and available.</p>
-          <hr>
-          <p>Best regards,</p>
-          <p><strong>Wandaforum Team</strong></p>
+          <p><strong>${date.toLocaleString()}</strong></p>
+          <p>Best regards,<br>Wandaforum Team</p>
         </div>
       `,
     });
-  
+
     return { message: 'Interview scheduled successfully' };
   }
-  
+
+  async acceptInterview(interviewId: number) {
+    const interview = await this.prisma.interview.update({
+      where: { id: interviewId },
+      data: { status: 'Accepted' },
+      include: { requester: true, interviewee: true },
+    });
+
+    await this.mailerService.sendMail({
+      to: interview.requester.email,
+      subject: 'Interview Confirmed',
+      html: `<p>Your interview has been confirmed.</p>`
+    });
+
+    return interview;
+  }
+
+  async rejectInterview(interviewId: string) {
+    const interview = await this.prisma.interview.update({
+      where: { id: interviewId },
+      data: { status: 'Rejected' },
+      include: { requester: true, recipient: true },
+    });
+
+    await this.mailerService.sendMail({
+      to: interview.requester.email,
+      subject: 'Your Interview Request was Rejected',
+      html: `<p>Unfortunately, your interview request has been rejected.</p>`
+    });
+
+    return { message: 'Interview rejected and email sent to the requester.' };
+  }
+
+  async acceptPeerMockInterview(interviewId: string) {
+    const interview = await this.prisma.mockInterview.update({
+      where: { id: interviewId },
+      data: { status: 'ACCEPTED' },
+    });
+
+    await this.mailerService.sendMail({
+      to: interview.requesterEmail,
+      subject: 'Mock Interview Confirmed',
+      html: `
+        <p>Dear ${interview.requesterName},</p>
+        <p>Your peer mock interview with ${interview.recipientName} has been scheduled.</p>
+        <p>Date: ${interview.date}</p>
+        <p><a href="https://wandaforum.com/interview/${interview.id}">Join the Interview</a></p>
+      `,
+    });
+
+    return { message: 'Mock interview successfully scheduled and confirmation email sent' };
+  }
 }

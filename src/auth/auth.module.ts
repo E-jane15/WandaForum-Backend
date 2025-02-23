@@ -13,6 +13,7 @@ import { CronService } from 'src/cron/cron.service';
 import { NotificationModule } from 'src/notification/notification.module';
 import { MockInterviewModule } from 'src/mock-interview/mock-interview.module';
 import { MockInterviewService } from 'src/mock-interview/mock-interview.service';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { MockInterviewService } from 'src/mock-interview/mock-interview.service'
   ],
   providers: [JwtStrategy, AuthService, MockInterviewService, JwtService, PrismaService, NotificationService, MailService, CronService],
   exports: [JwtModule],
-  controllers: [MockInterviewController],
+  controllers: [MockInterviewController,AuthController],
 })
 export class AuthModule {}
