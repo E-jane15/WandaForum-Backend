@@ -1,48 +1,48 @@
-export const generateInterviewReminder = (name: string, interviewDate: string, interviewTime: string, interviewLink: string) => {
-    return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Interview Reminder</title>
-          <style>
-              body { font-family: Arial, sans-serif; }
-              .container { padding: 20px; background-color: #f9f9f9; border-radius: 10px; }
-              h2 { color:rgb(224, 0, 213); } /* Purple color */
-              p { font-size: 16px; }
-              .button {
-                  display: inline-block;
-                  padding: 10px 20px;
-                  background-color:rgb(224, 0, 216);
-                  color: white;
-                  text-decoration: none;
-                  border-radius: 5px;
-                  font-weight: bold;
-              }
-          </style>
-      </head>
-      <body>
-          <div class="container">
-              <h2>Hello ${name},</h2>
-              <p>This is a friendly reminder about your upcoming interview.</p>
-              <p><strong>📅 Date:</strong> ${interviewDate}</p>
-              <p><strong>⏰ Time:</strong> ${interviewTime}</p>
-              <p><strong>🔗 Join Here:</strong> <a href="${interviewLink}" target="_blank">Click to Join</a></p>
-              <p>Make sure you're prepared and on time.</p>
-              <p>Best of luck!</p>
-              <footer style="text-align: center; padding: 10px;">
-        <p>Follow us on:</p>
-        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
-        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
-        <a href="https://linkedin.com">LinkedIn</a>
-      </footer>
-              <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
-              <p>— The Wandaforum Team</p>
 
-          </div>
-      </body>
-      </html>
-    `;
-  };
-  
+// export const generateInterviewReminder= (name: string, interviewDate: string, interviewTime: string, interviewLocation: string) => {
+
+    export const generateInterviewReminder = (name: string,interviewDate: string, interviewTime: string, interviewLocation: string, interviewLink: string) => {
+        return `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              .container { max-width: 600px; width: 100%; margin: auto; padding: 20px; background:rgb(40, 31, 43); border-radius: 10px; box-shadow: 0 0 10px rgba(110, 72, 122, 0.1); }
+              .header { background: #6a0dad; color: #fff; padding: 15px; text-align: center; font-size: 24px; }
+              .footer { margin-top: 20px; text-align: center; font-size: 14px; color: #888; }
+              .footer a { text-decoration: none; color: #6A0DAD; margin: 0 10px; }
+              .social-icons img { margin: 0 5px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">Wandaforum Interview Reminder</div>
+              <div style="padding: 20px;">
+                <p>Hi ${name},</p>
+                <p>This is a friendly reminder that your interview is scheduled for:</p>
+                <div style="font-size: 16px; color: #6A0DAD; margin: 20px 0; text-align: left;">
+                  <p><strong>Date:</strong> ${interviewDate}</p>
+                  <p><strong>Time:</strong> ${interviewTime}</p>
+                  <p><strong>Location:</strong> ${interviewLocation}</p>
+                </div>
+                <p>To join the interview, click here: <a href="${interviewLink}" style="color: #6A0DAD;">Click here to join</a></p>
+                <p>If you have any questions or need to reschedule, feel free to reach out to us.</p>
+                <p>Best regards,<br>The Wandaforum Team</p>
+      
+                <footer class="footer">
+                  <p>Follow us on:</p>
+                  <div class="social-icons">
+                    <a href="https://twitter.com"><img src="https://i.postimg.cc/7hVzMk5J/twitter-icon.png" alt="Twitter" width="24" height="24"></a>
+                    <a href="https://facebook.com"><img src="https://i.postimg.cc/cLz1FS6b/facebook-icon.png" alt="Facebook" width="24" height="24"></a>
+                    <a href="https://linkedin.com"><img src="https://i.postimg.cc/1z1QF0WV/linkedin-icon.png" alt="LinkedIn" width="24" height="24"></a>
+                  </div>
+                  <p>&copy; ${new Date().getFullYear()} Wandaforum</p>
+                </footer>
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+      };
+      

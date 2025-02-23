@@ -13,11 +13,6 @@ requestId: number, interviewId: string, string: any) {
     return this.interviewService.acceptInterview(requestId);
   }
 
-  // @Get('reject/:requestId')
-  // async rejectInterview(@Param('requestId') requestId: string) {
-  //   // return this.interviewService.rejectInterview(requestId);
-  //   return res.redirect('https://yourdomain.com/rejection-confirmed');
-  // }
 
   @Patch(':id/reject')
   async rejectInterview(@Param('id') interviewId: string) {

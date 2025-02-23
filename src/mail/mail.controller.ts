@@ -39,6 +39,28 @@ export class MailController {
     return this.mailService.sendInterviewReminderEmail(to, interviewTime, interviewDate, recipientName, interviewLink);
   }
 
+//feedback 
+@Post('send-interview-feedback')
+async sendInterviewFeedback(
+  @Body() body: { email: string; userName: string; interviewDate: string; feedbackLink: string }
+) {
+  const { email, userName, interviewDate, feedbackLink } = body;
+
+  if (!email || !userName || !interviewDate || !feedbackLink) {
+    throw new BadRequestException(
+      `Missing required fields (email, userName, interviewDate, feedbackLink). Received: ${JSON.stringify(body)}`
+    );
+  }
+
+  return this.mailService.sendInterviewFeedbackEmail(email, userName, interviewDate, feedbackLink);
+}
+
+
+
+
+
+
+
   /**
    * Sends an interview rejection email.
    */
@@ -53,7 +75,7 @@ export class MailController {
         'Missing required fields (email, userName, recipientName) instead got: ' + JSON.stringify(body)
       );    }
 
-    return this.mailService.sendRejectInterviewNotification(email, userName, recipientName);
+    return this.mailService.sendInterviewRejection(email, userName, recipientName);
   }
 
   /**

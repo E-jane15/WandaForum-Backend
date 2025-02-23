@@ -10,6 +10,18 @@ export class ReminderController {
   async getAllReminders() {
     return this.reminderService.getAllReminders();
   }
+///
+
+
+
+
+
+
+
+
+
+
+
 
   // Fetch a reminder by interview ID
   @Get(':interviewId')

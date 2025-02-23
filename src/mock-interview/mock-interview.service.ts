@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SendMockRequestDto } from './dto/send-mock.dto';
+import { peerMockInterviewConfirm } from 'src/emails-templates/peerMockInterviewConfirm';
 
 @Injectable()
 export class MockInterviewService {
@@ -20,11 +21,7 @@ export class MockInterviewService {
       throw new NotFoundException('Mock interview request not found');
     }
 
-    // if (request.status !== 'pending') {
-    //   return { message: 'Request already accepted or rejected' };
-    // }
-
-    // Update request status
+   
     await this.prisma.mockInterviewRequest.update({
       where: { id: request.id },
       data: { status: 'accepted' },
