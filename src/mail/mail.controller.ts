@@ -53,7 +53,7 @@ export class MailController {
         'Missing required fields (email, userName, recipientName) instead got: ' + JSON.stringify(body)
       );    }
 
-    return this.mailService.sendInterviewRejectionEmail(email, userName, recipientName);
+    return this.mailService.sendRejectInterviewNotification(email, userName, recipientName);
   }
 
   /**

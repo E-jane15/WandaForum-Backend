@@ -21,6 +21,12 @@ export const interviewRejection = ( recipientName: string,requesterName) => {
             <p>Unfortunately, <strong>${recipientName}</strong> has declined your interview request.</p>
             <p>You can try requesting another interview with a different user.</p>
             <p>Best Regards, <br> <strong>The Wandaforum Team</strong></p>
+            <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
           </div>
         </div>
       </body>

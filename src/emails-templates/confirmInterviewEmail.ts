@@ -1,7 +1,8 @@
 export const confirmInterviewEmail = (context: { requester: string, interviewee: string, date: string, time: string, link: string }) => {
   return `
-    <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; border: 1px solid #ddd; padding: 20px;">
-      <div style="background-color: #6A0DAD; padding: 15px; text-align: center; color: white; font-size: 20px;">
+    <div style="max-width: 600px; margin: auto; font-family: Arial, text-align:center; sans-serif; border: 1px solid #ddd; padding: 20px;">
+     <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
+    <div style="background-color: #6A0DAD; padding: 15px; text-align: center; color: white; font-size: 20px;">
         Interview Confirmation
       </div>
       

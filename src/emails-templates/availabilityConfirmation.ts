@@ -6,12 +6,15 @@ export const availabilityConfirmation = ({ startTime, endTime }) => `
     <p><strong>Start Time:</strong> ${startTime}</p>
     <p><strong>End Time:</strong> ${endTime}</p>
     <hr>
-    <footer style="margin-top: 20px;">
-    <>
+    <footer style="margin-top: 20px; text-aligned:center; padding: 20px;">
+  
       <p>Stay connected with us:</p>
-    
-      <a href="https://twitter.com/wandaforum">Twitter</a> | 
-      <a href="https://facebook.com/wandaforum">Facebook</a>
+   
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+
     </footer>
   </div>
 `;

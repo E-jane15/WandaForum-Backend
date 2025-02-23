@@ -31,6 +31,12 @@ export const generateInterviewReminder = (name: string, interviewDate: string, i
               <p><strong>🔗 Join Here:</strong> <a href="${interviewLink}" target="_blank">Click to Join</a></p>
               <p>Make sure you're prepared and on time.</p>
               <p>Best of luck!</p>
+              <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
               <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
               <p>— The Wandaforum Team</p>
 

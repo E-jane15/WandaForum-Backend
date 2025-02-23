@@ -12,7 +12,9 @@ export const interviewFeedback = (userName: string,interviewDate:string, feedbac
           <title>Mock Interview Feedback</title>
           <style>
               body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+
               .container { max-width: 600px; background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: auto; }
+              <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
               .header { text-align: center; padding: 10px 0; }
               .header img { width: 150px; }
               .content { text-align: center; padding: 20px; }
@@ -34,13 +36,14 @@ export const interviewFeedback = (userName: string,interviewDate:string, feedbac
                   <p>Your insights help us improve the experience for everyone.</p>
                   <a href="${feedbackLink}" class="btn">Give Feedback</a>
               </div>
-              <div class="footer">
-                  <p>Follow us on:</p>
-                  <div class="social-icons">
-                      <a href="https://facebook.com/yourpage"><img src="https://yourdomain.com/facebook.png" alt="Facebook"></a>
-                      <a href="https://twitter.com/yourpage"><img src="https://yourdomain.com/twitter.png" alt="Twitter"></a>
-                      <a href="https://linkedin.com/in/yourpage"><img src="https://yourdomain.com/linkedin.png" alt="LinkedIn"></a>
-                  </div>
+             
+                  
+                  <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
                   <p>Wandaforum &copy; 2025 | All Rights Reserved</p>
               </div>
           </div>

@@ -3,7 +3,8 @@ export const interviewRejection = (userName: string, recipientName: string) => {
   
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
-      <h2 style="color: red;">Interview Request Rejected</h2>
+     
+    <h2 style="color: red;">Interview Request Rejected</h2>
       <p>Hello ${userName},</p>
       <p>Unfortunately, your interview request has been <strong>rejected</strong> by ${recipientName}.</p>
       <p>You can try requesting another time or contact them directly.</p>

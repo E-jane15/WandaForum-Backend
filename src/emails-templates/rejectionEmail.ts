@@ -32,6 +32,12 @@ export const rejectionEmail = (requesterName: string, recipientName: string, int
           <p>If you do not wish to accept this request, click below to reject it:</p>
           <a class="button" href="https://yourdomain.com/interviews/${interviewId}/reject" target="_blank">Reject Interview</a>
           <p>Best Regards, <br> <strong>The Wandaforum Team</strong></p>
+          <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
         </div>
       </div>
     </body>

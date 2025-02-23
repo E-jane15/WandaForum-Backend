@@ -35,7 +35,13 @@
                   <p>Click below to join your interview:</p>
                   <a href="${meetingLink}" class="btn">Join Interview</a>
               </div>
-              <div class="footer">
+              
+              <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
                   <p>Need help? Contact support at <a href="mailto:support@wandaforum.com">support@wandaforum.com</a></p>
                   <p>Wandaforum &copy; 2025 | All Rights Reserved</p>
               </div>

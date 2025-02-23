@@ -8,11 +8,12 @@ export const confirmInterview = (requesterName: string,interviewDate:string,inte
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
           <title>Interview Confirmation</title>
           <style>
               body { font-family: Arial, sans-serif; }
               .container { padding: 20px; background-color: #f9f9f9; border-radius: 10px; text-align: center; }
-              h2 { color: #4A00E0; } /* Purple color */
+              h2 { color:rgb(122, 10, 122); } /* Purple color */
               p { font-size: 16px; }
               .button {
                   display: inline-block;
@@ -37,6 +38,12 @@ export const confirmInterview = (requesterName: string,interviewDate:string,inte
               <a class="button" href="${rejectLink}" style="background-color: red;">Reject</a>
               <p>Best regards,</p>
               <p>— The Wandaforum Team</p>
+              <footer style="text-align: center; padding: 10px;">
+        <p>Follow us on:</p>
+        <a href="https://twitter.com" style="margin-right: 10px;">Twitter</a>
+        <a href="https://facebook.com" style="margin-right: 10px;">Facebook</a>
+        <a href="https://linkedin.com">LinkedIn</a>
+      </footer>
           </div>
       </body>
       </html>

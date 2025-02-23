@@ -16,6 +16,9 @@ import { rejectionEmail } from 'src/emails-templates/rejectionEmail';
 import { link } from 'fs';
 @Injectable()
 export class MailService {
+  sendRejectInterviewNotification(email: any, userName: string, recipientName: string) {
+    throw new Error('Method not implemented.');
+  }
   private readonly logger = new Logger(MailService.name);
 
   constructor(private readonly mailerService: MailerService) {}
