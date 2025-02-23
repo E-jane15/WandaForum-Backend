@@ -1,11 +1,13 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, Get } from '@nestjs/common';
 import { MailService } from './mail.service';
 // import commentTemplate from './templates/commentNotification'; 
+import { InterviewController } from '../interview/interview.controller';
 
 @Controller('mail') // Defines the base route as /mail
 export class MailController {
   constructor(private readonly mailService: MailService) {}
 
+  
   /**
    * Sends a general notification email.
    */
@@ -35,6 +37,23 @@ export class MailController {
       );    }
 
     return this.mailService.sendInterviewReminderEmail(to, interviewTime, interviewDate, recipientName, interviewLink);
+  }
+
+  /**
+   * Sends an interview rejection email.
+   */
+  @Post('send-interview-rejection')
+  async sendInterviewRejection(
+    @Body() body: { email, userName: string; recipientName: string}
+  ) {
+    const { email, recipientName, userName } = body;
+
+    if (!email || !userName || !recipientName) {
+      throw new BadRequestException(
+        'Missing required fields (email, userName, recipientName) instead got: ' + JSON.stringify(body)
+      );    }
+
+    return this.mailService.sendInterviewRejectionEmail(email, userName, recipientName);
   }
 
   /**
