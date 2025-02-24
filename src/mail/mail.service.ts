@@ -10,37 +10,13 @@ import { availabilityConfirmation } from 'src/emails-templates/availabilityConfi
 import { confirmInterview } from 'src/emails-templates/confirmInterview';
 import { interviewFeedback } from 'src/emails-templates/interviewFeedback';
 import { interviewRejection } from 'src/emails-templates/interviewRejection';
-
+import { welcomeEmailTemplate } from 'src/emails-templates/welcomeEmailTemplate';
 import { notification } from 'src/emails-templates/notification';
 import { peerMockInterviewConfirm } from 'src/emails-templates/peerMockInterviewConfirm';
 import { rejectionEmail } from 'src/emails-templates/peerMockInterviewRequestEmail';
 import { link } from 'fs';
 @Injectable()
 export class MailService {
-  // sendRejectInterviewNotification(email: any, userName: string, recipientName: string) {
-  //   throw new Error('Method not implemented.');
-  // }
-  // sendInterviewRejection(to :string, requesterName: string, recipientName: string);
-  // async sendInterviewRejectionEmail(
-  //   email: string,
-  //   recipientName: string,
-  //   requesterName: string,
-  // ): Promise<void> {
-  //   const htmlContent = interviewRejection(recipientName, requesterName);
-
-  //   try {
-  //     await this.mailerService.sendMail({
-  //       to: email,
-  //       from: process.env.EMAIL_USER,  // Email from your environment variable
-  //       subject: 'Interview Rejection Notification',
-  //       html: htmlContent,
-  //     });
-  //   } catch (error) {
-  //     console.error(`Failed to send interview rejection email to ${email}: ${error.message}`);
-  //     throw new Error('Failed to send interview rejection email');
-  //   }
-  // }
-   
   
   private readonly logger = new Logger(MailService.name);
 
@@ -211,7 +187,8 @@ async sendInterviewRejection(
     console.error(`Failed to send email: ${error.message}`);
     return { success: false, message: `Failed to send email to ${email}` };
   }
-}
+}//welcome email
+
 
   /**
    * Sends an OTP email for email verification
@@ -404,29 +381,6 @@ async sendCancelAvailabilityEmail(userEmail: string, userName: string) {
       context: { name },
     });
   }
-
-//forgot
-// async sendForgotPasswordEmail(email: string, userName: string, resetToken: string) {
-//   const resetLink = `https://yourfrontend.com/reset-password?token=${resetToken}`;
-
-//   await this.mailerService.sendMail({
-//     to: email,
-//     subject: 'Password Reset Request',
-//     template: './forgotPassword', // Use the corresponding email template
-//     context: {
-//       userName,
-//       resetLink,
-//     },
-//   });
-// }
-
-
-
-
-
-
-
-
 
 
 

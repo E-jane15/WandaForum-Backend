@@ -6,22 +6,68 @@ import { InterviewController } from '../interview/interview.controller';
 @Controller('mail') // Defines the base route as /mail
 export class MailController {
   constructor(private readonly mailService: MailService) {}
+//welcome 
+@Post('send-welcome-email')
+async sendWelcomeEmail(
+  @Body() body: { email: string; userName: string }
+) {
+  const { email, userName } = body;
 
+  if (!email || !userName) {
+    throw new BadRequestException(
+      `Missing required fields (email, userName), received: ${JSON.stringify(body)}`
+    );
+  }
+
+  await this.mailService.sendWelcomeEmail(email, userName);
+  return { success: true, message: `Welcome email sent to ${email}` };
+}
   
   /**
    * Sends a general notification email.
    */
-  @Post('send-notification')
-  async sendNotification(@Body() body: { to: string; subject: string; message: string }) {
-    const { to, subject, message } = body;
+  // @Post('send-notification')
+  // async sendNotification(@Body() body: { to: string; subject: string; message: string }) {
+  //   const { to, subject, message } = body;
 
-    if (!to || !subject || !message) {
-      throw new BadRequestException('Missing required fields (to, subject, message)');
+  //   if (!to || !subject || !message) {
+  //     throw new BadRequestException('Missing required fields (to, subject, message)');
+  //   }
+
+  //   return this.mailService.sendNotificationEmail(to, "name", "userName", "link", "message");
+  // }
+  @Post('send-forgot-password')
+  async sendForgotPasswordEmail(
+    @Body() body: { to: string; userName: string; resetLink: string }
+  ) {
+    const { to, userName, resetLink } = body;
+
+    if (!to || !userName || !resetLink) {
+      throw new BadRequestException(
+        'Missing required fields (to, userName, resetLink). Received: ' + JSON.stringify(body)
+      );
     }
 
-    return this.mailService.sendNotificationEmail(to, "name", "userName", "link", "message");
+    return this.mailService.sendForgotPasswordEmail(to, userName, resetLink);
   }
 
+  // confirm availability 
+  @Post('send-availability-confirmation')
+  async sendAvailabilityConfirmation(
+    @Body() body: { email: string; startTime: string; endTime: string },
+  ) {
+    const { email, startTime, endTime } = body;
+
+    // Validate required fields
+    if (!email || !startTime || !endTime) {
+      throw new BadRequestException(
+        `Missing required fields (email, startTime, endTime). Received: ${JSON.stringify(body)}`,
+      );
+    }
+
+    // Call the service to send the email
+    return this.mailService.sendAvailabilityConfirmation(email, startTime, endTime);
+  }
   /**
    * Sends an interview reminder email.
    */
@@ -94,6 +140,31 @@ async sendInterviewFeedback(
 
     return { success: true, message: 'OTP sent successfully', otp };
   }
+
+  // cancel
+  @Post('send-cancel-availability')
+  async sendCancelAvailabilityEmail(
+    @Body() body: { userEmail: string; userName: string },
+  ) {
+    const { userEmail, userName } = body;
+
+    // Validate request body
+    if (!userEmail || !userName) {
+      throw new BadRequestException(
+        `Missing required fields (userEmail, userName), received: ${JSON.stringify(body)}`
+      );
+    }
+
+    // Call the mail service to send the email
+    const response = await this.mailService.sendCancelAvailabilityEmail(userEmail, userName);
+    return response;
+  }
+
+  //forgot password 
+  // @Post('send-forgot-password')
+  // async sendForgotPasswordEmail(@Body() body: { email: string; userName: string; resetLink: string }) {
+  //   return this.mailService.sendForgotPasswordEmail(body.email, body.userName, body.resetLink);
+  // }
 
   /**
    * Sends an email notification for a comment.

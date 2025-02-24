@@ -9,7 +9,7 @@ export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendInterviewReminder(email: string, name: string, date: string, time: string, link: string) {
-    const emailContent = generateInterviewReminder(name, date, time, link);
+    const emailContent = generateInterviewReminder(name,email, date, time, link);
 
     try {
       await this.mailerService.sendMail({

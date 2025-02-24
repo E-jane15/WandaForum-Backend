@@ -15,7 +15,7 @@ export const rejectionEmail = (requesterName: string, recipientName: string, int
           font-size: 16px;
           font-weight: bold;
           color: #fff;
-          background: #ff0000;
+          background:rgb(177, 36, 149);
           border-radius: 5px;
           text-decoration: none;
           margin-top: 20px;

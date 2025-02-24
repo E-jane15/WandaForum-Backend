@@ -1,8 +1,6 @@
 
 export const interviewFeedback = (userName: string,interviewDate:string, feedbackLink:string, recipientName: string) => {
 
-
-
     return `
       <!DOCTYPE html>
       <html lang="en">
