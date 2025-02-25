@@ -6,7 +6,7 @@ import { NotificationService } from './notification.services';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-   
+ 
   @Post('send')
   async sendNotification(@Body() createNotificationDto: CreateNotificationDto) {
     return this.notificationService.sendNotification(createNotificationDto);

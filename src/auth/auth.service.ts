@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -26,13 +26,11 @@ export class AuthService {
   ) {}
 
   //==== verify email
-  async registerUser(email: string, password: string, dto: CreateUserDto) {
+  async registerUser(email: string, password: string, userName: string) {
     // Rename destructured 'email' to 'userEmail' to avoid duplication
-    const { email: userEmail, password: userPassword, userName } = dto;
-
-    const hashedPassword = await bcrypt.hash(userPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
-      data: { email: userEmail, password: hashedPassword, userName },
+      data: { email, password: hashedPassword, userName },
     });
 
     const token = this.jwtService.sign(
@@ -51,6 +49,39 @@ export class AuthService {
     return { message: 'Verification email sent' };
   }
 
+
+// Delete user account mechanism
+async deleteAccount(email: string, password: string): Promise<string> {
+  // Step 1: Find the user in the database
+  const user = await this.prisma.user.findUnique({ where: { email: email } });
+  if (!user) {
+    throw new NotFoundException(); // Custom exception to handle user not found case
+  }
+
+  // Step 2: Verify the user's password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error('Invalid password'); // Handle invalid password
+  }
+
+  // Step 3: Delete the user from the database
+  await this.prisma.user.delete({ where: { id: user.id } });
+
+  // Step 4: Send confirmation email
+  await this.mailerService.sendMail({
+    to: user.email,
+    subject: 'Account Deleted Successfully',
+    html: `<p>Dear ${user.userName},</p>
+           <p>Your account has been successfully deleted. We are sorry to see you go.</p>
+           <p>If this was a mistake, please contact us at support@wandaforum.com.</p>
+           <p>Best regards,</p>
+           <p>The Wandaforum Team</p>`,
+  });
+
+  // Step 5: Return success message
+  return 'Your account has been deleted successfully.';
+}
+
   //============= forgot password
   async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -65,7 +96,6 @@ export class AuthService {
     await this.MailService.sendForgotPasswordEmail(email, user.userName, resetToken);
     return { message: 'Reset email sent' };
   }
- 
 
     async resetPassword(userId: string, newPassword: string) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);

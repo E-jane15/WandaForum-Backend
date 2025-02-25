@@ -11,7 +11,8 @@
           <title>Mock Interview Confirmed</title>
           <style>
               body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-              .container { max-width: 600px; background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: auto; }
+              .container {max-width: 380px; width: 100%; margin: auto; background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: auto; }
+              <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
               .header { text-align: center; padding: 10px 0; }
               .header img { width: 150px; }
               .content { text-align: center; padding: 20px; }

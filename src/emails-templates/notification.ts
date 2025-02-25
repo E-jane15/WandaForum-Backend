@@ -1,7 +1,8 @@
 export const notification = (userName: string, context: string, message: string, link: string) => {
   return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd;">
-      <div style="background: #6A0DAD; color: white; text-align: center; padding: 20px;">
+    <div style="max-width: 380px; width: 100%; margin: auto;font-family: Arial, sans-serif;  border: 2px solid #ddd;">
+     <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="150" style="margin-right: 10px;">
+    <div style="background: #6A0DAD; color: white; text-align: center; padding: 20px;">
         <h1>Wandaforum Notifications</h1>
       </div>
 
