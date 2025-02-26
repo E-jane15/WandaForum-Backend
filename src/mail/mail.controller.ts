@@ -53,21 +53,22 @@ async sendWelcomeEmail(
 
   // confirm availability 
   @Post('send-availability-confirmation')
-  async sendAvailabilityConfirmation(
-    @Body() body: { email: string; startTime: string; endTime: string },
-  ) {
-    const { email, startTime, endTime } = body;
+async sendAvailabilityConfirmation(
+  @Body() body: { email: string; name: string; startTime: string; endTime: string },
+) {
+  const { email, name, startTime, endTime } = body;
 
-    // Validate required fields
-    if (!email || !startTime || !endTime) {
-      throw new BadRequestException(
-        `Missing required fields (email, startTime, endTime). Received: ${JSON.stringify(body)}`,
-      );
-    }
-
-    // Call the service to send the email
-    return this.mailService.sendAvailabilityConfirmation(email, startTime, endTime);
+  // Validate required fields
+  if (!email || !name || !startTime || !endTime) {
+    throw new BadRequestException(
+      `Missing required fields (email, name, startTime, endTime). Received: ${JSON.stringify(body)}`,
+    );
   }
+
+  // Call the service to send the email
+  return this.mailService.sendAvailabilityConfirmation(email, name, startTime, endTime);
+}
+
   /**
    * Sends an interview reminder email.
    */

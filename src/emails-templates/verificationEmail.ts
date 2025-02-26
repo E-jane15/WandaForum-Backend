@@ -1,7 +1,7 @@
 export const otpVerificationEmail = (email: string, otp: string) => {
 
   return `
-    <div style=" max-width: 380px; width: 100%; margin: auto; font-family: Arial, sans-serif; background-color:rgb(169, 129, 166); padding: 30px; text-align: center; border-radius: 8px;">
+    <div style=" max-width: 380px; width: 100%; margin: auto; font-family: Arial, sans-serif; padding: 30px; text-align: center; border-radius: 8px;">
        <img src="https://i.postimg.cc/qgr2g5ND/logo.png" alt="Wandaprep Logo" width="90" ;>
     
     <div style=" background-color:rgb(128, 13, 173); padding: 33px; border-radius: 8px 8px 0 0; color: white;">
@@ -13,7 +13,7 @@ export const otpVerificationEmail = (email: string, otp: string) => {
         <p style="color: #555; font-size: 16px; line-height: 1.5;">
           We received a request to verify your account. Your One-Time Password (OTP) is:
         </p>
-        <div style="font-size: 24px; font-weight: bold; color: #6A0DAD; margin: 20px 0;">
+        <div style="font-size: 24px; font-weight: bold; color:rgb(243, 25, 228); margin: 20px 0;">
           ${otp}
         </div>
         <p style="color: #555; font-size: 16px; line-height: 1.5;">
@@ -23,8 +23,8 @@ export const otpVerificationEmail = (email: string, otp: string) => {
       </div>
       <hr style="border-top: 1px solid #ddd; margin-top: 20px;"/>
       <footer style="text-align: center; font-size: 12px; color: #888; padding: 10px;">
-        <p>WandaForum Team</p>
-        <p>Contact us at <a href="mailto:support@wanda.com" style="color:rgb(236, 227, 241); text-decoration: none;">support@wanda.com</a></p>
+        <p >WandaForum Team</p>
+        <p>Contact us at <a href="mailto:support@wanda.com" style="color:rgb(45, 23, 75); text-decoration: none;">support@wanda.com</a></p>
       </footer>
     </div>
   `;

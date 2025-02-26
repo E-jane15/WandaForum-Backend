@@ -33,6 +33,7 @@
     "@nestjs/websockets": "^10.4.15",
     "@prisma/client": "^6.4.1",
     "@react-email/components": "^0.0.33",
+    "@sendgrid/mail": "^8.1.4",
     "agora-rtc-sdk-ng": "^4.23.1",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",

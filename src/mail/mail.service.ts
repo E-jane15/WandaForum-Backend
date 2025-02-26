@@ -27,7 +27,6 @@ export class MailService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-
   async sendInterviewReminderEmail(to: string, interviewTime: string, interviewDate: string, recipientName: string, interviewLink: string) {
     const subject = 'Interview Reminder from Wandaforum';
     const name = recipientName;
@@ -354,16 +353,17 @@ async sendCancelAvailabilityEmail(userEmail: string, userName: string) {
 
 
   //availability confirmation
-  async sendAvailabilityConfirmation(email: string, startTime: string, endTime: string) {
+  async sendAvailabilityConfirmation(email: string, name: string, startTime: string, endTime: string) {
     try {
-      const emailContent = availabilityConfirmation({ startTime, endTime });
-
+      // Pass only the required properties (startTime, endTime, name)
+      const emailContent = availabilityConfirmation({ startTime, endTime, name });
+  
       await this.mailerService.sendMail({
         to: email,
         subject: 'Availability Scheduled - WandaForum',
         html: emailContent,
       });
-
+  
       console.log(`Availability confirmation email sent to ${email}`);
       return { success: true, message: `Confirmation email sent to ${email}` };
     } catch (error) {
@@ -371,7 +371,7 @@ async sendCancelAvailabilityEmail(userEmail: string, userName: string) {
       return { success: false, message: `Failed to send email to ${email}` };
     }
   }
-
+  
   //cancel availablity 
   async sendAvailabilityCancellation(email: string, name: string) {
     await this.mailerService.sendMail({
