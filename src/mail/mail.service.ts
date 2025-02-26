@@ -8,7 +8,8 @@ import { cancelAvailability} from 'src/emails-templates/cancelAvailability';
 import { forgotPasswordEmail } from 'src/emails-templates/forgotPasswordEmail';
 import { availabilityConfirmation } from 'src/emails-templates/availabilityConfirmation';
 import { confirmInterview } from 'src/emails-templates/confirmInterview';
-import { interviewFeedback } from 'src/emails-templates/interviewFeedback';
+import { interviewFeedbackEmail } from 'src/emails-templates/interviewFeedbackEmail';
+
 import { interviewRejection } from 'src/emails-templates/interviewRejection';
 import { welcomeEmailTemplate } from 'src/emails-templates/welcomeEmailTemplate';
 import { notification } from 'src/emails-templates/notification';
@@ -267,9 +268,10 @@ async sendInterviewRejectionEmail(email: string, userName: string, recipientName
 
 
 //feed back email
-async sendInterviewFeedbackEmail(email: string, userName: string, interviewDate: string, feedbackLink: string) {
+async sendInterviewFeedbackEmail(email: string, userName: string, interviewDate: string, feedbackLink: string) 
+{
   try {
-    const emailContent = interviewFeedback(email,userName, interviewDate, feedbackLink);
+    const emailContent = interviewFeedbackEmail(email,userName, interviewDate, feedbackLink);
 
     await this.mailerService.sendMail({
       to: email,
